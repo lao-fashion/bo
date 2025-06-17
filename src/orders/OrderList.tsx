@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Fragment, useCallback } from 'react';
+import { Fragment, useCallback, useState, createContext, useContext } from 'react';
 import {
     AutocompleteInput,
     BooleanField,
@@ -19,27 +19,59 @@ import {
     TopToolbar,
     useDefaultTitle,
     useListContext,
+    useDataProvider,
 } from 'react-admin';
-import { useMediaQuery, Divider, Tabs, Tab, Theme } from '@mui/material';
+import { useMediaQuery, Divider, Tabs, Tab, Theme, ToggleButton, ToggleButtonGroup, Box, Typography } from '@mui/material';
 
 import CustomerReferenceField from '../visitors/CustomerReferenceField';
 import AddressField from '../visitors/AddressField';
 import MobileGrid from './MobileGrid';
-import { Customer, Order } from '../types';
+import { Customer, Order, Currency, ApiOrder } from '../types';
 
 const storeKeyByStatus = {
-    ordered: 'orders.list1',
+    pending: 'orders.list1',
     delivered: 'orders.list2',
     cancelled: 'orders.list3',
 };
 
+const CurrencyContext = createContext<{
+    currency: Currency;
+    setCurrency: (currency: Currency) => void;
+}>({ currency: 'USD', setCurrency: () => {} });
+
+export const useCurrency = () => useContext(CurrencyContext);
+
 const ListActions = () => {
     const { filterValues } = useListContext();
+    const { currency, setCurrency } = useCurrency();
     const status =
-        (filterValues.status as 'ordered' | 'delivered' | 'cancelled') ??
-        'ordered';
+        (filterValues.status as 'pending' | 'delivered' | 'cancelled') ??
+        'pending';
+    
+    const handleCurrencyChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newCurrency: Currency | null,
+    ) => {
+        if (newCurrency !== null) {
+            setCurrency(newCurrency);
+        }
+    };
+    
     return (
         <TopToolbar>
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                <Typography variant="body2" sx={{ mr: 1 }}>Currency:</Typography>
+                <ToggleButtonGroup
+                    value={currency}
+                    exclusive
+                    onChange={handleCurrencyChange}
+                    size="small"
+                >
+                    <ToggleButton value="USD">USD</ToggleButton>
+                    <ToggleButton value="LAK">LAK</ToggleButton>
+                    <ToggleButton value="THB">THB</ToggleButton>
+                </ToggleButtonGroup>
+            </Box>
             <FilterButton />
             <ColumnsButton storeKey={storeKeyByStatus[status]} />
             <ExportButton />
@@ -58,47 +90,39 @@ const OrdersTitle = () => {
     );
 };
 
-const OrderList = () => (
-    <List
-        filterDefaultValues={{ status: 'ordered' }}
-        sort={{ field: 'date', order: 'DESC' }}
-        perPage={25}
-        filters={orderFilters}
-        actions={<ListActions />}
-        title={<OrdersTitle />}
-    >
-        <TabbedDatagrid />
-    </List>
-);
+const OrderList = () => {
+    const [currency, setCurrency] = useState<Currency>('USD');
+    
+    return (
+        <CurrencyContext.Provider value={{ currency, setCurrency }}>
+            <List
+                filterDefaultValues={{ status: 'pending' }}
+                sort={{ field: 'created', order: 'DESC' }}
+                perPage={25}
+                filters={orderFilters}
+                actions={<ListActions />}
+                title={<OrdersTitle />}
+            >
+                <TabbedDatagrid />
+            </List>
+        </CurrencyContext.Provider>
+    );
+};
 
 const orderFilters = [
     <SearchInput source="q" alwaysOn />,
-    <ReferenceInput source="customer_id" reference="customers">
-        <AutocompleteInput
-            optionText={(choice?: Customer) =>
-                choice?.id // the empty choice is { id: '' }
-                    ? `${choice.first_name} ${choice.last_name}`
-                    : ''
-            }
-            sx={{ minWidth: 200 }}
-        />
-    </ReferenceInput>,
-    <DateInput source="date_gte" parse={d => new Date(d).toISOString()} />,
-    <DateInput source="date_lte" parse={d => new Date(d).toISOString()} />,
-    <NumberInput source="total_gte" />,
-    <NullableBooleanInput source="returned" />,
+    <SearchInput source="customerName" label="Customer Name" />,
+    <SearchInput source="phoneNumber" label="Phone Number" />,
+    <DateInput source="created_gte" label="From Date" parse={d => new Date(d).toISOString().split('T')[0]} />,
+    <DateInput source="created_lte" label="To Date" parse={d => new Date(d).toISOString().split('T')[0]} />,
 ];
 
 const tabs = [
-    { id: 'ordered', name: 'ordered' },
+    { id: 'pending', name: 'pending' },
     { id: 'delivered', name: 'delivered' },
     { id: 'cancelled', name: 'cancelled' },
 ];
 
-const currencyStyle = {
-    style: 'currency' as const,
-    currency: 'USD',
-};
 
 const TabbedDatagrid = () => {
     const listContext = useListContext();
@@ -153,8 +177,8 @@ const TabbedDatagrid = () => {
             ) : (
                 <>
                     {(filterValues.status == null ||
-                        filterValues.status === 'ordered') && (
-                        <OrdersTable storeKey={storeKeyByStatus.ordered} />
+                        filterValues.status === 'pending') && (
+                        <OrdersTable storeKey={storeKeyByStatus.pending} />
                     )}
                     {filterValues.status === 'delivered' && (
                         <OrdersTable storeKey={storeKeyByStatus.delivered}>
@@ -175,8 +199,29 @@ const TabbedDatagrid = () => {
     );
 };
 
-const Column = DataTable.Col<Order>;
-const ColumnNumber = DataTable.NumberCol<Order>;
+const Column = DataTable.Col<ApiOrder>;
+const ColumnNumber = DataTable.NumberCol<ApiOrder>;
+
+const AmountField = ({ record }: { record?: ApiOrder }) => {
+    const { currency } = useCurrency();
+    
+    if (!record) return null;
+    
+    const getAmount = () => {
+        switch (currency) {
+            case 'USD':
+                return `$${parseFloat(record.amountUSD).toFixed(2)}`;
+            case 'LAK':
+                return `₭${parseFloat(record.amountLAK).toLocaleString()}`;
+            case 'THB':
+                return `฿${parseFloat(record.amountTHB).toFixed(2)}`;
+            default:
+                return `$${parseFloat(record.amountUSD).toFixed(2)}`;
+        }
+    };
+    
+    return <span style={{ fontWeight: 'bold' }}>{getAmount()}</span>;
+};
 
 const OrdersTable = React.memo(
     ({
@@ -188,35 +233,21 @@ const OrdersTable = React.memo(
     }) => (
         <DataTable
             rowClick="edit"
-            hiddenColumns={['total_ex_taxes', 'delivery_fees', 'taxes']}
             storeKey={storeKey}
         >
-            <Column source="date">
-                <DateField source="date" showTime />
+            <Column source="created">
+                <DateField source="created" showTime />
             </Column>
-            <Column source="reference" />
-            <Column source="customer_id" field={CustomerReferenceField} />
-            <Column label="resources.orders.fields.address">
-                <ReferenceField
-                    source="customer_id"
-                    reference="customers"
-                    link={false}
-                >
-                    <AddressField />
-                </ReferenceField>
-            </Column>
+            <Column source="referenceID" label="Reference" />
+            <Column source="customerName" label="Customer" />
+            <Column source="phoneNumber" label="Phone" />
+            <Column source="address" label="Address" />
+            <Column source="status" label="Status" />
             <ColumnNumber
-                source="basket.length"
-                label="resources.orders.fields.nb_items"
+                source="quantity"
+                label="Quantity"
             />
-            <ColumnNumber source="total_ex_taxes" options={currencyStyle} />
-            <ColumnNumber source="delivery_fees" options={currencyStyle} />
-            <ColumnNumber source="taxes" options={currencyStyle} />
-            <ColumnNumber
-                source="total"
-                options={currencyStyle}
-                sx={{ fontWeight: 'bold' }}
-            />
+            <Column source="amount" label="Amount" field={AmountField} />
             {children}
         </DataTable>
     )

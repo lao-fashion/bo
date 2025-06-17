@@ -1,5 +1,6 @@
 import { DataProvider } from 'react-admin';
 import fakeServerFactory from '../fakeServer';
+import ordersApiDataProvider from './ordersApi';
 
 export default (type: string) => {
     // The fake servers require to generate data, which can take some time.
@@ -18,6 +19,11 @@ export default (type: string) => {
                 return import.meta.env.MODE === 'production';
             }
             return (resource: string, params: any) => {
+                // Use custom orders API for orders resource
+                if (resource === 'orders' && ordersApiDataProvider[name.toString()]) {
+                    return ordersApiDataProvider[name.toString()](resource, params);
+                }
+                
                 return dataProviderPromise.then(dataProvider => {
                     return dataProvider[name.toString()](resource, params);
                 });
