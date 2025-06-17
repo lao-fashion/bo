@@ -11,6 +11,7 @@ import {
     Link,
     useReference,
 } from 'react-admin';
+import queryString from 'query-string';
 import {
     Typography,
     Card,
@@ -125,12 +126,13 @@ const EventList = () => {
                                         flexGrow={1}
                                         to={{
                                             pathname: '/orders',
-                                            search: `displayedFilters=${JSON.stringify(
-                                                { customer_id: true }
-                                            )}&filter=${JSON.stringify({
-                                                customer_id: record.id,
-                                                status: 'delivered',
-                                            })}`,
+                                            search: queryString.stringify({
+                                                displayedFilters: { customer_id: true },
+                                                filter: {
+                                                    customer_id: record.id,
+                                                    status: 'delivered',
+                                                },
+                                            }),
                                         }}
                                     >
                                         {translate('resources.orders.amount', {
@@ -179,11 +181,12 @@ const EventList = () => {
                                         flexGrow={1}
                                         to={{
                                             pathname: '/reviews',
-                                            search: `displayedFilters=${JSON.stringify(
-                                                { customer_id: true }
-                                            )}&filter=${JSON.stringify({
-                                                customer_id: record.id,
-                                            })}`,
+                                            search: queryString.stringify({
+                                                displayedFilters: { customer_id: true },
+                                                filter: {
+                                                    customer_id: record.id,
+                                                },
+                                            }),
                                         }}
                                     >
                                         {translate('resources.reviews.amount', {
