@@ -1,6 +1,6 @@
 import React, { useMemo, CSSProperties } from 'react';
 import { useGetList } from 'react-admin';
-import { useMediaQuery, Theme } from '@mui/material';
+import { useMediaQuery, Theme, CircularProgress, Alert, Box } from '@mui/material';
 import { subDays, startOfDay } from 'date-fns';
 
 import Welcome from './Welcome';
@@ -10,6 +10,10 @@ import PendingOrders from './PendingOrders';
 import PendingReviews from './PendingReviews';
 import NewCustomers from './NewCustomers';
 import OrderChart from './OrderChart';
+import StatusCountCards from './StatusCountCards';
+import SellRevenueChart from './SellRevenueChart';
+import OrderPendingList from './OrderPendingList';
+import { useDashboardData } from './useDashboardData';
 
 import { Order } from '../types';
 
@@ -46,6 +50,10 @@ const Dashboard = () => {
     );
     const aMonthAgo = useMemo(() => subDays(startOfDay(new Date()), 30), []);
 
+    // Use new dashboard data hook
+    const { sellRevenue, statusCount, orderList, loading, error } = useDashboardData();
+
+    // Keep existing orders API for backward compatibility
     const { data: orders } = useGetList<Order>('orders', {
         filter: { date_gte: aMonthAgo.toISOString() },
         sort: { field: 'date', order: 'DESC' },
@@ -87,15 +95,52 @@ const Dashboard = () => {
     }, [orders]);
 
     const { nbNewOrders, pendingOrders, revenue, recentOrders } = aggregation;
+
+    // Show loading state
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    // Show error state
+    if (error) {
+        return (
+            <Box p={2}>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
+                <Welcome />
+            </Box>
+        );
+    }
     return isXSmall ? (
         <div>
             <div style={styles.flexColumn as CSSProperties}>
                 <Welcome />
-                <MonthlyRevenue value={revenue} />
                 <VerticalSpacer />
-                <NbNewOrders value={nbNewOrders} />
-                <VerticalSpacer />
-                <PendingOrders orders={pendingOrders} />
+                {/* Status Section */}
+                {statusCount && (
+                    <>
+                        <StatusCountCards
+                            orderStatusCount={statusCount.orderStatusCount}
+                            customerCount={statusCount.customerCount}
+                            sellAmount={statusCount.sellAmount}
+                        />
+                        <VerticalSpacer />
+                    </>
+                )}
+                {/* Sell Revenue Section */}
+                {sellRevenue && (
+                    <>
+                        <SellRevenueChart data={sellRevenue} />
+                        <VerticalSpacer />
+                    </>
+                )}
+                {/* Order Pending List Section */}
+                {orderList && <OrderPendingList data={orderList} />}
             </div>
         </div>
     ) : isSmall ? (
@@ -103,41 +148,58 @@ const Dashboard = () => {
             <div style={styles.singleCol}>
                 <Welcome />
             </div>
-            <div style={styles.flex}>
-                <MonthlyRevenue value={revenue} />
-                <Spacer />
-                <NbNewOrders value={nbNewOrders} />
-            </div>
-            <div style={styles.singleCol}>
-                <OrderChart orders={recentOrders} />
-            </div>
-            <div style={styles.singleCol}>
-                <PendingOrders orders={pendingOrders} />
-            </div>
+            {/* Status Section */}
+            {statusCount && (
+                <div style={styles.singleCol}>
+                    <StatusCountCards
+                        orderStatusCount={statusCount.orderStatusCount}
+                        customerCount={statusCount.customerCount}
+                        sellAmount={statusCount.sellAmount}
+                    />
+                </div>
+            )}
+            {/* Sell Revenue Section */}
+            {sellRevenue && (
+                <div style={styles.singleCol}>
+                    <SellRevenueChart data={sellRevenue} />
+                </div>
+            )}
+            {/* Order Pending List Section */}
+            {orderList && (
+                <div style={styles.singleCol}>
+                    <OrderPendingList data={orderList} />
+                </div>
+            )}
         </div>
     ) : (
         <>
             <Welcome />
+            <div style={styles.singleCol}>
+                {/* Status Section */}
+                {statusCount && (
+                    <StatusCountCards
+                        orderStatusCount={statusCount.orderStatusCount}
+                        customerCount={statusCount.customerCount}
+                        sellAmount={statusCount.sellAmount}
+                    />
+                )}
+            </div>
             <div style={styles.flex}>
                 <div style={styles.leftCol}>
-                    <div style={styles.flex}>
-                        <MonthlyRevenue value={revenue} />
-                        <Spacer />
-                        <NbNewOrders value={nbNewOrders} />
-                    </div>
-                    <div style={styles.singleCol}>
-                        <OrderChart orders={recentOrders} />
-                    </div>
-                    <div style={styles.singleCol}>
-                        <PendingOrders orders={pendingOrders} />
-                    </div>
+                    {/* Sell Revenue Section */}
+                    {sellRevenue && (
+                        <div style={styles.singleCol}>
+                            <SellRevenueChart data={sellRevenue} />
+                        </div>
+                    )}
                 </div>
                 <div style={styles.rightCol}>
-                    <div style={styles.flex}>
-                        <PendingReviews />
-                        <Spacer />
-                        <NewCustomers />
-                    </div>
+                    {/* Order Pending List Section */}
+                    {orderList && (
+                        <div style={styles.singleCol}>
+                            <OrderPendingList data={orderList} />
+                        </div>
+                    )}
                 </div>
             </div>
         </>
