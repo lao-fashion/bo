@@ -23,11 +23,14 @@ import Segments from './segments/Segments';
 import visitors from './visitors';
 import { themes, ThemeName } from './themes/themes';
 import LoginPage from './layout/Login2';
+import MuiProvider from './styles/ThemeProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { CurrencyProvider } from './components/CurrencySelector/CurrencyProvider';
 
 const i18nProvider = polyglotI18nProvider(
-  locale => {
+  (locale) => {
     if (locale === 'fr') {
-      return import('./i18n/fr').then(messages => messages.default);
+      return import('./i18n/fr').then((messages) => messages.default);
     }
 
     // Always fallback on english
@@ -44,12 +47,12 @@ const store = localStorageStore(undefined, 'ECommerce');
 
 const App = () => {
   const [themeName] = useStore<ThemeName>('themeName', 'soft');
-  const singleTheme = themes.find(theme => theme.name === themeName)?.single;
-  const lightTheme = themes.find(theme => theme.name === themeName)?.light;
-  const darkTheme = themes.find(theme => theme.name === themeName)?.dark;
+  const singleTheme = themes.find((theme) => theme.name === themeName)?.single;
+  const lightTheme = themes.find((theme) => theme.name === themeName)?.light;
+  const darkTheme = themes.find((theme) => theme.name === themeName)?.dark;
   return (
     <Admin
-      title="Posters Galore Admin"
+      title='Posters Galore Admin'
       dataProvider={dataProviderFactory(
         process.env.REACT_APP_DATA_PROVIDER || ''
       )}
@@ -63,25 +66,34 @@ const App = () => {
       theme={singleTheme}
       lightTheme={lightTheme}
       darkTheme={darkTheme}
-      defaultTheme="light"
+      defaultTheme='light'
       requireAuth
     >
       <CustomRoutes>
-        <Route path="/segments" element={<Segments />} />
+        <Route path='/segments' element={<Segments />} />
       </CustomRoutes>
-      <Resource name="customers" {...visitors} />
-      <Resource name="orders" {...orders} />
-      <Resource name="invoices" {...invoices} />
-      <Resource name="products" {...products} />
-      <Resource name="categories" {...categories} />
-      <Resource name="reviews" {...reviews} />
+      <Resource name='customers' {...visitors} />
+      <Resource name='orders' {...orders} />
+      <Resource name='invoices' {...invoices} />
+      <Resource name='products' {...products} />
+      <Resource name='categories' {...categories} />
+      <Resource name='reviews' {...reviews} />
     </Admin>
   );
 };
 
+// Create a client
+const queryClient = new QueryClient();
+
 const AppWrapper = () => (
   <StoreContextProvider value={store}>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <MuiProvider>
+        <CurrencyProvider>
+          <App />
+        </CurrencyProvider>
+      </MuiProvider>
+    </QueryClientProvider>
   </StoreContextProvider>
 );
 

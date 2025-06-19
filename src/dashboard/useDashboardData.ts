@@ -73,13 +73,32 @@ export const useDashboardData = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        setData(prev => ({ ...prev, loading: true, error: null }));
+        setData((prev) => ({ ...prev, loading: true, error: null }));
 
-        const [sellRevenueResponse, statusCountResponse, orderListResponse] = await Promise.all([
-          pb.send('/dashboard/sell-revenue', { method: 'GET' }),
-          pb.send('/dashboard/status-count', { method: 'GET' }),
-          pb.send('/order-list?page=1&perPage=10&status=pending', { method: 'GET' }),
-        ]);
+        const [sellRevenueResponse, statusCountResponse, orderListResponse] =
+          await Promise.all([
+            pb.send('/dashboard/sell-revenue', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${pb.authStore.token}`,
+              },
+            }),
+            pb.send('/dashboard/status-count', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${pb.authStore.token}`,
+              },
+            }),
+            pb.send('/order-list?page=1&perPage=10&status=pending', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${pb.authStore.token}`,
+              },
+            }),
+          ]);
 
         setData({
           sellRevenue: sellRevenueResponse.sell,
@@ -90,10 +109,13 @@ export const useDashboardData = () => {
         });
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           loading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch dashboard data',
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to fetch dashboard data',
         }));
       }
     };

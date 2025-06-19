@@ -5,15 +5,14 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { startOfDay, subDays } from 'date-fns';
-import { CSSProperties, useMemo } from 'react';
-import { useGetList } from 'react-admin';
+import { CSSProperties } from 'react';
 
 import OrderPendingList from './OrderPendingList';
 import SellRevenueChart from './SellRevenueChart';
 import StatusCountCards from './StatusCountCards';
 import { useDashboardData } from './useDashboardData';
 
+import { SellRevenue } from '../model/dashboard';
 import { Order } from '../types';
 
 interface OrderStats {
@@ -37,7 +36,6 @@ const styles = {
   singleCol: { marginTop: '1em', marginBottom: '1em' },
 };
 
-const Spacer = () => <span style={{ width: '1em' }} />;
 const VerticalSpacer = () => <span style={{ height: '1em' }} />;
 
 const Dashboard = () => {
@@ -45,54 +43,10 @@ const Dashboard = () => {
     theme.breakpoints.down('sm')
   );
   const isSmall = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
-  const aMonthAgo = useMemo(() => subDays(startOfDay(new Date()), 30), []);
 
   // Use new dashboard data hook
   const { sellRevenue, statusCount, orderList, loading, error } =
     useDashboardData();
-
-  // Keep existing orders API for backward compatibility
-  const { data: orders } = useGetList<Order>('orders', {
-    filter: { date_gte: aMonthAgo.toISOString() },
-    sort: { field: 'date', order: 'DESC' },
-    pagination: { page: 1, perPage: 50 },
-  });
-
-  const aggregation = useMemo<State>(() => {
-    if (!orders) return {};
-    const aggregations = orders
-      .filter((order) => order.status !== 'cancelled')
-      .reduce(
-        (stats: OrderStats, order) => {
-          if (order.status !== 'cancelled') {
-            stats.revenue += order.total;
-            stats.nbNewOrders++;
-          }
-          if (order.status === 'ordered') {
-            stats.pendingOrders.push(order);
-          }
-          return stats;
-        },
-        {
-          revenue: 0,
-          nbNewOrders: 0,
-          pendingOrders: [],
-        }
-      );
-    return {
-      recentOrders: orders,
-      revenue: aggregations.revenue.toLocaleString(undefined, {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }),
-      nbNewOrders: aggregations.nbNewOrders,
-      pendingOrders: aggregations.pendingOrders,
-    };
-  }, [orders]);
-
-  const { nbNewOrders, pendingOrders, revenue, recentOrders } = aggregation;
 
   // Show loading state
   if (loading) {
@@ -126,6 +80,7 @@ const Dashboard = () => {
         {statusCount && (
           <>
             <StatusCountCards
+              sellRevenue={sellRevenue?.[0] as SellRevenue}
               orderStatusCount={statusCount.orderStatusCount}
               customerCount={statusCount.customerCount}
               sellAmount={statusCount.sellAmount}
@@ -150,6 +105,7 @@ const Dashboard = () => {
       {statusCount && (
         <div style={styles.singleCol}>
           <StatusCountCards
+            sellRevenue={sellRevenue?.[0] as SellRevenue}
             orderStatusCount={statusCount.orderStatusCount}
             customerCount={statusCount.customerCount}
             sellAmount={statusCount.sellAmount}
@@ -159,7 +115,11 @@ const Dashboard = () => {
       {/* Sell Revenue Section */}
       {sellRevenue && (
         <div style={styles.singleCol}>
-          <SellRevenueChart data={sellRevenue} />
+          <div className='min-h-screen bg-gray-100 p-4'>
+            <div className='max-w-4xl mx-auto'>
+              <SellRevenueChart data={sellRevenue} />
+            </div>
+          </div>
         </div>
       )}
       {/* Order Pending List Section */}
@@ -175,6 +135,7 @@ const Dashboard = () => {
         {/* Status Section */}
         {statusCount && (
           <StatusCountCards
+            sellRevenue={sellRevenue?.[0] as SellRevenue}
             orderStatusCount={statusCount.orderStatusCount}
             customerCount={statusCount.customerCount}
             sellAmount={statusCount.sellAmount}
