@@ -6,11 +6,14 @@ export const chiptuneTheme: RaThemeOptions = {
     palette: {
         mode: 'dark' as 'dark',
         primary: {
-            main: '#0f0',
+            main: '#D4AF37',
         },
         background: {
             default: '#111111',
             paper: '#212121',
+        },
+        text: {
+            primary: '#D4AF37',
         },
     },
     typography: {

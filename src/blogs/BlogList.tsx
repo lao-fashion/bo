@@ -78,7 +78,7 @@ export const BlogList = () => (
       <TextField source='title' />
       <DescriptionField />
       <UrlField source='image_url' />
-      <UrlField source='video_url' />
+      {/* <UrlField source='video_url' /> */}
       <NumberField source='count' />
       <DateField source='created' />
       <DateField source='updated' />
