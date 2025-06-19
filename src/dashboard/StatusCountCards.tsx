@@ -161,7 +161,7 @@ const StatusCountCards: React.FC<Props> = ({
       </Grid>
       <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
         <ModernStatusCard
-          title='Orders Status'
+          title='Pending Orders'
           value={orderStatusCount.pending}
           icon={
             <Box>
