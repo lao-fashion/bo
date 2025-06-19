@@ -59,8 +59,19 @@ export default defineConfig(async ({ mode }) => {
         },
         build: {
             sourcemap: true,
+            chunkSizeWarningLimit: 1500, // increase default limit (default is 500)
             rollupOptions: {
                 plugins: [preserveDirectives()],
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('node_modules')) {
+                            if (id.includes('react')) return 'react';
+                            if (id.includes('@mui')) return 'mui';
+                            if (id.includes('lodash')) return 'lodash';
+                            return 'vendor';
+                        }
+                    },
+                },
             },
         },
         resolve: {
