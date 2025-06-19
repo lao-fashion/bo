@@ -115,9 +115,9 @@ const SellRevenueChart: React.FC<Props> = ({ data }) => {
             <LineChart
               data={displayData}
               margin={{
-                top: 10,
-                right: 20,
-                left: 10,
+                top: 0,
+                right: 0,
+                left: -10,
                 bottom: 10,
               }}
             >

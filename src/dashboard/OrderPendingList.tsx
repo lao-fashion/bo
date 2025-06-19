@@ -75,13 +75,14 @@ const OrderPendingList: React.FC<Props> = ({ data }) => {
   return (
     <Card sx={{ borderRadius: '10px', p: 2 }}>
       <CardHeader
+        sx={{ mt: -1 }}
         title={`Pending Orders (${data.totalItems})`}
         subheader={`Showing ${data.items.length} of ${data.totalItems} orders`}
         titleTypographyProps={{ fontWeight: 'bold', fontSize: 18 }}
         subheaderTypographyProps={{ color: 'text.secondary' }}
       />
       <CardContent sx={{ padding: 0 }}>
-        <Box sx={{ overflowX: 'auto', maxWidth: 650, mx: 'auto' }}>
+        <Box sx={{ overflowX: 'auto', maxWidth: 630, mx: 'auto' }}>
           <TableContainer>
             <Table size='small' sx={{ minWidth: '800px' }}>
               <TableHead>

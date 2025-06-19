@@ -59,22 +59,8 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     [open]
   );
 
-  // const displayCurrency = (currency: string) =>
-  //   useMemo(() => {
-  //     switch (currency) {
-  //       case 'THB':
-  //         return '฿';
-  //       case 'USD':
-  //         return '$';
-  //       case 'LAK':
-  //         return '₭';
-  //       default:
-  //         return currency;
-  //     }
-  //   }, [currency]);
-
   return (
-    <Box display='flex' alignItems='center'>
+    <Box display='flex' alignItems='center' sx={{ mt: -0.4 }}>
       {showLabel && (
         <Typography variant='body2' sx={{ mr: 0, color: '#7A6A55' }}>
           Currency:

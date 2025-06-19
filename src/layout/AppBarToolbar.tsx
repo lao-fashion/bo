@@ -1,15 +1,10 @@
-import { LoadingIndicator } from 'react-admin';
-
-import { ThemeSwapper } from '../themes/ThemeSwapper';
+import { LoadingIndicator, LocalesMenuButton } from 'react-admin';
 import CurrencySelector from '../components/CurrencySelector/CurrencySelector';
 
 export const AppBarToolbar = () => (
-  <>
-    {/* <LocalesMenuButton /> */}
-    {/* Currency selector */}
-    <CurrencySelector  />
-
-    <ThemeSwapper />
+  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <CurrencySelector />
+    <LocalesMenuButton />
     <LoadingIndicator />
-  </>
+  </div>
 );
