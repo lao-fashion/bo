@@ -26,6 +26,7 @@ import LoginPage from './layout/Login2';
 import MuiProvider from './styles/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CurrencyProvider } from './components/CurrencySelector/CurrencyProvider';
+import blogs from './blogs';
 
 const i18nProvider = polyglotI18nProvider(
   (locale) => {
@@ -78,6 +79,7 @@ const App = () => {
       <Resource name='products' {...products} />
       <Resource name='categories' {...categories} />
       <Resource name='reviews' {...reviews} />
+      <Resource name='blogs' {...blogs} />
     </Admin>
   );
 };

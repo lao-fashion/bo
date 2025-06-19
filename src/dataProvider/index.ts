@@ -1,5 +1,6 @@
 import { DataProvider } from 'react-admin';
 import ordersApiDataProvider from './ordersApi';
+import { blogsDataProvider } from './blogsDataProvider';
 
 export default (type: string) => {
   // The fake servers require to generate data, which can take some time.
@@ -23,6 +24,11 @@ export default (type: string) => {
           return ordersApiDataProvider[name.toString()](resource, params);
         }
 
+        // Use custom blogs data provider for blogs resource
+        if (resource === 'blogs' && blogsDataProvider[name.toString()]) {
+          return blogsDataProvider[name.toString()](resource, params);
+        }
+
         return dataProviderPromise.then((dataProvider) => {
           return dataProvider[name.toString()](resource, params);
         });
@@ -34,13 +40,6 @@ export default (type: string) => {
 };
 
 const getDataProvider = async (type: string): Promise<DataProvider> => {
-  /**
-   * This demo can work with either a fake REST server, or a fake GraphQL server.
-   *
-   * To avoid bundling both libraries, the dataProvider and fake server factories
-   * use the import() function, so they are asynchronous.
-   */
-
   return import('./rest').then((provider) => provider.default);
 };
 

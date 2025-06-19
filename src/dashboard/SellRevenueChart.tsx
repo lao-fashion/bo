@@ -1,21 +1,20 @@
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Box,
-  Typography,
-  Grid,
-} from '@mui/material';
 
 interface SellRevenueData {
   year: number;
@@ -44,7 +43,7 @@ const SellRevenueChart: React.FC<Props> = ({ data }) => {
 
   const fillMissingMonths = (data: SellRevenueData[]): SellRevenueData[] => {
     const year = data[0]?.year ?? new Date().getFullYear();
-    const monthMap = new Map(data.map(item => [item.month, item]));
+    const monthMap = new Map(data.map((item) => [item.month, item]));
 
     const fullData: SellRevenueData[] = [];
     for (let m = 1; m <= 12; m++) {
@@ -87,7 +86,9 @@ const SellRevenueChart: React.FC<Props> = ({ data }) => {
       const usdValue = Math.max(400, baseUSD + variation);
 
       sampleData.push({
-        date: `${String(finalData[0]?.month).padStart(2, '0')}/${String(finalData[0]?.year).slice(-2)}`,
+        date: `${String(finalData[0]?.month).padStart(2, '0')}/${String(
+          finalData[0]?.year
+        ).slice(-2)}`,
         usd: Math.round(usdValue),
         day: i,
       });
