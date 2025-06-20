@@ -2,6 +2,7 @@ import { DataProvider } from 'react-admin';
 import ordersApiDataProvider from './ordersApi';
 import { blogsDataProvider } from './blogsDataProvider';
 import { customersDataProvider } from './customersDataProvider';
+import { productsDataProvider } from './productsDataProvider';
 
 export default (type: string) => {
   // The fake servers require to generate data, which can take some time.
@@ -33,6 +34,11 @@ export default (type: string) => {
         // Use custom customers data provider for customers resource
         if (resource === 'customers' && customersDataProvider[name.toString()]) {
           return customersDataProvider[name.toString()](resource, params);
+        }
+
+        // Use custom products data provider for products resource
+        if (resource === 'products' && productsDataProvider[name.toString()]) {
+          return productsDataProvider[name.toString()](params);
         }
 
         return dataProviderPromise.then((dataProvider) => {

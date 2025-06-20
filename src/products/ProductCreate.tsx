@@ -1,13 +1,16 @@
 import * as React from 'react';
 import {
     Create,
-    TabbedForm,
+    SimpleForm,
     TextInput,
+    NumberInput,
+    ReferenceInput,
+    SelectInput,
     required,
     useCreateContext,
     useDefaultTitle,
 } from 'react-admin';
-import { ProductEditDetails } from './ProductEditDetails';
+
 const RichTextInput = React.lazy(() =>
     import('ra-input-rich-text').then(module => ({
         default: module.RichTextInput,
@@ -28,28 +31,57 @@ const ProductTitle = () => {
 
 const ProductCreate = () => (
     <Create title={<ProductTitle />}>
-        <TabbedForm defaultValues={{ sales: 0 }}>
-            <TabbedForm.Tab
-                label="resources.products.tabs.image"
-                sx={{ maxWidth: '40em' }}
+        <SimpleForm sx={{ maxWidth: '40em' }}>
+            <TextInput 
+                autoFocus 
+                source="name" 
+                validate={required()} 
+                fullWidth 
+            />
+            <TextInput 
+                source="name_la" 
+                label="Name (Lao)" 
+                fullWidth 
+            />
+            <TextInput 
+                source="description" 
+                multiline 
+                rows={3} 
+                validate={required()} 
+                fullWidth 
+            />
+            <TextInput 
+                source="description_la" 
+                label="Description (Lao)" 
+                multiline 
+                rows={3} 
+                fullWidth 
+            />
+            <NumberInput 
+                source="price" 
+                validate={required()} 
+                min={0} 
+                step={0.01} 
+                fullWidth 
+            />
+            <ReferenceInput
+                source="category_id"
+                reference="categories"
             >
-                <TextInput autoFocus source="image" validate={required()} />
-                <TextInput source="thumbnail" validate={required()} />
-            </TabbedForm.Tab>
-            <TabbedForm.Tab
-                label="resources.products.tabs.details"
-                path="details"
-                sx={{ maxWidth: '40em' }}
-            >
-                <ProductEditDetails />
-            </TabbedForm.Tab>
-            <TabbedForm.Tab
-                label="resources.products.tabs.description"
-                path="description"
-            >
-                <RichTextInput source="description" label="" />
-            </TabbedForm.Tab>
-        </TabbedForm>
+                <SelectInput source="name" fullWidth validate={required()} />
+            </ReferenceInput>
+            <TextInput 
+                source="image_url" 
+                label="Image URL" 
+                fullWidth 
+            />
+            <TextInput 
+                source="details" 
+                multiline 
+                rows={4} 
+                fullWidth 
+            />
+        </SimpleForm>
     </Create>
 );
 
