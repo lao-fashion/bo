@@ -136,6 +136,19 @@ const customEnglishMessages: TranslationMessages = {
     blogs: {
       name: 'Blog |||| Blogs',
     },
+    users: {
+      name: 'User admin |||| User admin',
+      fields: {
+        full_name: 'Full Name',
+        username: 'Username',
+        email: 'Email',
+        phone_number: 'Phone Number',
+        verified: 'Verified',
+        emailVisibility: 'Email Visibility',
+        password: 'Password',
+        passwordConfirm: 'Confirm Password',
+      },
+    },
     invoices: {
       name: 'Invoice |||| Invoices',
       fields: {

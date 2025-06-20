@@ -4,6 +4,7 @@ import { blogsDataProvider } from './blogsDataProvider';
 import { customersDataProvider } from './customersDataProvider';
 import { productsDataProvider } from './productsDataProvider';
 import { productCategoriesDataProvider } from './productCategoriesDataProvider';
+import { usersDataProvider } from './usersDataProvider';
 
 export default (type: string) => {
   // The fake servers require to generate data, which can take some time.
@@ -45,6 +46,11 @@ export default (type: string) => {
         // Use custom product categories data provider for product_categories and categories resources
         if ((resource === 'product_categories' || resource === 'categories') && productCategoriesDataProvider[name.toString()]) {
           return productCategoriesDataProvider[name.toString()](resource, params);
+        }
+
+        // Use custom users data provider for users resource
+        if (resource === 'users' && usersDataProvider[name.toString()]) {
+          return usersDataProvider[name.toString()](resource, params);
         }
 
         return dataProviderPromise.then((dataProvider) => {

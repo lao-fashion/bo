@@ -15,6 +15,7 @@ import customers from '../customers';
 import orders from '../orders';
 import products from '../products';
 import visitors from '../visitors';
+import users from '../users';
 
 type MenuName = 'menuCatalog' | 'menuSales' | 'menuCustomers';
 
@@ -74,6 +75,15 @@ const Menu = ({ dense = false }: MenuProps) => {
           smart_count: 2,
         })}
         leftIcon={<customers.icon />}
+        dense={dense}
+      />
+      <MenuItemLink
+        to='/users'
+        state={{ _scrollToTop: true }}
+        primaryText={translate(`resources.users.name`, {
+          smart_count: 2,
+        })}
+        leftIcon={<users.icon />}
         dense={dense}
       />
       <MenuItemLink
