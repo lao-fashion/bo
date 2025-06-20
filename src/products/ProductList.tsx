@@ -17,10 +17,10 @@ import {
     ListItemButton,
     ListItemText,
     ListItemIcon,
-    Checkbox,
     InputAdornment,
     TextField as MuiTextField
 } from '@mui/material';
+import { Check as CheckIcon } from '@mui/icons-material';
 import {
     CreateButton,
     ExportButton,
@@ -33,10 +33,6 @@ import {
     EditButton,
     DeleteButton,
     ShowButton,
-    NumberInput,
-    ReferenceInput,
-    SearchInput,
-    SelectInput,
     SortButton,
     Title,
     TopToolbar,
@@ -48,8 +44,6 @@ import {
     ImageField,
     useRecordContext,
     RecordContextProvider,
-    FilterForm,
-    FilterLiveSearch,
     useDataProvider,
     useNotify,
 } from 'react-admin';
@@ -60,7 +54,6 @@ const ProductList = () => {
     
     return (
         <List
-            filters={productFilters}
             perPage={24}
             sort={{ field: 'name', order: 'ASC' }}
             actions={<ListActions />}
@@ -370,12 +363,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.sales_best}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.sales_best && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="Best sellers"
@@ -389,12 +377,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.sales_average}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.sales_average && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="Average"
@@ -408,12 +391,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.sales_low}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.sales_low && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="Low"
@@ -427,12 +405,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.sales_never}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.sales_never && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="Never sold"
@@ -452,12 +425,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.stock_out}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.stock_out && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="Out of stock"
@@ -471,12 +439,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.stock_low}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.stock_low && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="1-9 items"
@@ -490,12 +453,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.stock_medium}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.stock_medium && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="10-49 items"
@@ -509,12 +467,7 @@ const ProductFilters = () => {
                             sx={{ py: 0.5 }}
                         >
                             <ListItemIcon sx={{ minWidth: 32 }}>
-                                <Checkbox
-                                    edge="start"
-                                    checked={!!filterValues.stock_high}
-                                    tabIndex={-1}
-                                    size="small"
-                                />
+                                {filterValues.stock_high && <CheckIcon fontSize="small" color="primary" />}
                             </ListItemIcon>
                             <ListItemText 
                                 primary="50 items and more"
@@ -540,12 +493,7 @@ const ProductFilters = () => {
                                     sx={{ py: 0.5 }}
                                 >
                                     <ListItemIcon sx={{ minWidth: 32 }}>
-                                        <Checkbox
-                                            edge="start"
-                                            checked={filterValues.category_id === category.id}
-                                            tabIndex={-1}
-                                            size="small"
-                                        />
+                                        {filterValues.category_id === category.id && <CheckIcon fontSize="small" color="primary" />}
                                     </ListItemIcon>
                                     <ListItemText 
                                         primary={category.name}
@@ -561,58 +509,6 @@ const ProductFilters = () => {
     );
 };
 
-export const productFilters = [
-    <FilterLiveSearch source="q" placeholder="Search products..." />,
-    <ReferenceInput
-        source="category_id"
-        reference="categories"
-        sort={{ field: 'name', order: 'ASC' }}
-    >
-        <SelectInput source="name" />
-    </ReferenceInput>,
-    <NumberInput source="price_gte" label="Min Price" />,
-    <NumberInput source="price_lte" label="Max Price" />,
-    <SelectInput 
-        source="sales_best" 
-        label="Best Sellers"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="sales_average" 
-        label="Average Sales"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="sales_low" 
-        label="Low Sales"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="sales_never" 
-        label="Never Sold"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="stock_out" 
-        label="Out of Stock"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="stock_low" 
-        label="1-9 Items"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="stock_medium" 
-        label="10-49 Items"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-    <SelectInput 
-        source="stock_high" 
-        label="50+ Items"
-        choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-    />,
-];
 
 const ProductBulkActionButtons = () => (
     <>
