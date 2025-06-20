@@ -443,7 +443,12 @@ const OrderDetail: React.FC<{ order: PBOrder }> = ({ order }) => {
         <>
             <TableRow>
                 <TableCell>
-                    <DateField source="created" record={order} showTime />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <IconButton onClick={() => setOpen(!open)} size="small">
+                            {open ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                        <DateField source="created" record={order} showTime />
+                    </Box>
                 </TableCell>
                 <TableCell>{order.reference_id}</TableCell>
                 <TableCell>{order.customer_name}</TableCell>
@@ -457,14 +462,9 @@ const OrderDetail: React.FC<{ order: PBOrder }> = ({ order }) => {
                     />
                 </TableCell>
                 <TableCell>{getCurrentTotal()}</TableCell>
-                <TableCell>
-                    <IconButton onClick={() => setOpen(!open)}>
-                        {open ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
-                </TableCell>
             </TableRow>
             <TableRow>
-                <TableCell colSpan={8} sx={{ paddingBottom: 0, paddingTop: 0 }}>
+                <TableCell colSpan={7} sx={{ paddingBottom: 0, paddingTop: 0 }}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 2 }}>
                             {loading && <Loading />}
@@ -680,7 +680,6 @@ const OrdersTable = React.memo(({ status }: { status: string }) => {
                         <TableCell>Address</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>Total</TableCell>
-                        <TableCell>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
