@@ -36,6 +36,17 @@ export interface ApiOrderResponse {
 
 export type Currency = 'USD' | 'LAK' | 'THB';
 
+export interface ProductCategory {
+    id: string;
+    collectionId: string;
+    collectionName: string;
+    name: string;
+    name_la: string;
+    image_url: string;
+    created: string;
+    updated: string;
+}
+
 declare global {
     interface Window {
         restServer: any;

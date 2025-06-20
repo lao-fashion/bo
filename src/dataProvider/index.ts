@@ -3,6 +3,7 @@ import ordersApiDataProvider from './ordersApi';
 import { blogsDataProvider } from './blogsDataProvider';
 import { customersDataProvider } from './customersDataProvider';
 import { productsDataProvider } from './productsDataProvider';
+import { productCategoriesDataProvider } from './productCategoriesDataProvider';
 
 export default (type: string) => {
   // The fake servers require to generate data, which can take some time.
@@ -39,6 +40,11 @@ export default (type: string) => {
         // Use custom products data provider for products resource
         if (resource === 'products' && productsDataProvider[name.toString()]) {
           return productsDataProvider[name.toString()](params);
+        }
+
+        // Use custom product categories data provider for product_categories and categories resources
+        if ((resource === 'product_categories' || resource === 'categories') && productCategoriesDataProvider[name.toString()]) {
+          return productCategoriesDataProvider[name.toString()](resource, params);
         }
 
         return dataProviderPromise.then((dataProvider) => {
