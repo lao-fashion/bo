@@ -11,7 +11,15 @@ import {
     CardActions,
     Button,
     IconButton,
-    useTheme
+    useTheme,
+    List as MuiList,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    ListItemIcon,
+    Checkbox,
+    InputAdornment,
+    TextField as MuiTextField
 } from '@mui/material';
 import {
     CreateButton,
@@ -42,8 +50,10 @@ import {
     RecordContextProvider,
     FilterForm,
     FilterLiveSearch,
+    useDataProvider,
+    useNotify,
 } from 'react-admin';
-import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, Search as SearchIcon } from '@mui/icons-material';
 
 const ProductList = () => {
     const isSmall = useMediaQuery<Theme>(theme => theme.breakpoints.down('md'));
@@ -281,6 +291,51 @@ const QuickFilter = ({ label }: InputProps) => {
 
 const ProductFilters = () => {
     const translate = useTranslate();
+    const dataProvider = useDataProvider();
+    const notify = useNotify();
+    const { setFilters, filterValues } = useListContext();
+    const [categories, setCategories] = React.useState<any[]>([]);
+    const [loadingCategories, setLoadingCategories] = React.useState(true);
+    const [searchValue, setSearchValue] = React.useState('');
+    
+    React.useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const { data } = await dataProvider.getList('categories', {
+                    pagination: { page: 1, perPage: 100 },
+                    sort: { field: 'name', order: 'ASC' },
+                    filter: {},
+                });
+                setCategories(data);
+            } catch (error) {
+                notify('Error loading categories', { type: 'warning' });
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+        
+        fetchCategories();
+    }, [dataProvider, notify]);
+
+    const handleCategoryToggle = (categoryId: string) => {
+        const currentCategoryId = filterValues.category_id;
+        const newCategoryId = currentCategoryId === categoryId ? undefined : categoryId;
+        setFilters({ ...filterValues, category_id: newCategoryId }, null);
+    };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setSearchValue(value);
+        setFilters({ ...filterValues, q: value }, null);
+    };
+
+    const handleSalesFilter = (filterType: string, value: boolean) => {
+        setFilters({ ...filterValues, [filterType]: value }, null);
+    };
+
+    const handleStockFilter = (filterType: string, value: boolean) => {
+        setFilters({ ...filterValues, [filterType]: value }, null);
+    };
     
     return (
         <Card sx={{ order: -1, mr: 2, width: '16em' }}>
@@ -289,78 +344,218 @@ const ProductFilters = () => {
                     Filters
                 </Typography>
                 
-                <FilterForm>
-                    <FilterLiveSearch source="q" placeholder="Search products..." />
+                <MuiTextField
+                    fullWidth
+                    placeholder="Search products..."
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                    size="small"
+                    sx={{ mb: 3 }}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon sx={{ color: 'text.secondary' }} />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                
+                <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center' }}>
+                    💰 SALES
+                </Typography>
+                <MuiList dense sx={{ py: 0 }}>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleSalesFilter('sales_best', !filterValues.sales_best)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.sales_best}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="Best sellers"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleSalesFilter('sales_average', !filterValues.sales_average)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.sales_average}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="Average"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleSalesFilter('sales_low', !filterValues.sales_low)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.sales_low}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="Low"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleSalesFilter('sales_never', !filterValues.sales_never)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.sales_never}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="Never sold"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                </MuiList>
+
+                <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center' }}>
+                    📊 STOCK
+                </Typography>
+                <MuiList dense sx={{ py: 0 }}>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleStockFilter('stock_out', !filterValues.stock_out)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.stock_out}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="Out of stock"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleStockFilter('stock_low', !filterValues.stock_low)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.stock_low}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="1-9 items"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleStockFilter('stock_medium', !filterValues.stock_medium)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.stock_medium}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="10-49 items"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => handleStockFilter('stock_high', !filterValues.stock_high)}
+                            sx={{ py: 0.5 }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                <Checkbox
+                                    edge="start"
+                                    checked={!!filterValues.stock_high}
+                                    tabIndex={-1}
+                                    size="small"
+                                />
+                            </ListItemIcon>
+                            <ListItemText 
+                                primary="50 items and more"
+                                primaryTypographyProps={{ variant: 'body2' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
+                </MuiList>
                     
-                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                        Sales Performance
+                <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, display: 'flex', alignItems: 'center' }}>
+                    🏷️ CATEGORIES
+                </Typography>
+                {loadingCategories ? (
+                    <Typography variant="body2" color="textSecondary">
+                        Loading categories...
                     </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <SelectInput 
-                            source="sales_best" 
-                            label="Best Sellers"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="sales_average" 
-                            label="Average Sales"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="sales_low" 
-                            label="Low Sales"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="sales_never" 
-                            label="Never Sold"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                    </Box>
-
-                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                        Stock Status
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <SelectInput 
-                            source="stock_out" 
-                            label="Out of Stock"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="stock_low" 
-                            label="1-9 Items"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="stock_medium" 
-                            label="10-49 Items"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                        <SelectInput 
-                            source="stock_high" 
-                            label="50+ Items"
-                            choices={[{ id: true, name: 'Yes' }, { id: false, name: 'No' }]}
-                        />
-                    </Box>
-
-                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                        Categories
-                    </Typography>
-                    <ReferenceInput
-                        source="category_id"
-                        reference="categories"
-                        sort={{ field: 'name', order: 'ASC' }}
-                    >
-                        <SelectInput source="name" />
-                    </ReferenceInput>
-
-                    <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-                        Price Range
-                    </Typography>
-                    <NumberInput source="price_gte" label="Min Price" />
-                    <NumberInput source="price_lte" label="Max Price" />
-                </FilterForm>
+                ) : (
+                    <MuiList dense sx={{ py: 0 }}>
+                        {categories.map((category) => (
+                            <ListItem key={category.id} disablePadding>
+                                <ListItemButton
+                                    onClick={() => handleCategoryToggle(category.id)}
+                                    sx={{ py: 0.5 }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 32 }}>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={filterValues.category_id === category.id}
+                                            tabIndex={-1}
+                                            size="small"
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText 
+                                        primary={category.name}
+                                        primaryTypographyProps={{ variant: 'body2' }}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </MuiList>
+                )}
             </CardContent>
         </Card>
     );
