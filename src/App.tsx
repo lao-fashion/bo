@@ -21,6 +21,7 @@ import products from './products';
 import reviews from './reviews';
 import Segments from './segments/Segments';
 import visitors from './visitors';
+import customers from './customers';
 import { themes, ThemeName } from './themes/themes';
 import LoginPage from './layout/Login2';
 import MuiProvider from './styles/ThemeProvider';
@@ -73,7 +74,7 @@ const App = () => {
       <CustomRoutes>
         <Route path='/segments' element={<Segments />} />
       </CustomRoutes>
-      <Resource name='customers' {...visitors} />
+      <Resource name='customers' {...customers} />
       <Resource name='orders' {...orders} />
       <Resource name='invoices' {...invoices} />
       <Resource name='products' {...products} />

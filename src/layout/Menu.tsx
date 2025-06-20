@@ -11,6 +11,7 @@ import {
 
 import blogs from '../blogs';
 import categories from '../categories';
+import customers from '../customers';
 import orders from '../orders';
 import products from '../products';
 import visitors from '../visitors';
@@ -72,7 +73,7 @@ const Menu = ({ dense = false }: MenuProps) => {
         primaryText={translate(`resources.customers.name`, {
           smart_count: 2,
         })}
-        leftIcon={<visitors.icon />}
+        leftIcon={<customers.icon />}
         dense={dense}
       />
       <MenuItemLink
