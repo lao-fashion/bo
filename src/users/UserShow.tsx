@@ -24,7 +24,7 @@ const UserShow = () => {
         <Show actions={<UserShowActions />} title="User Details">
             <SimpleShowLayout>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" gutterBottom>
@@ -73,22 +73,18 @@ const UserShow = () => {
                                     <BooleanField
                                         source="verified"
                                         label="Verified"
-                                        TrueComponent={() => <Chip label="Verified" color="success" />}
-                                        FalseComponent={() => <Chip label="Unverified" color="error" />}
                                     />
                                     
                                     <BooleanField
                                         source="emailVisibility"
                                         label="Email Visibility"
-                                        TrueComponent={() => <Chip label="Email Visible" color="primary" />}
-                                        FalseComponent={() => <Chip label="Email Hidden" color="default" />}
                                     />
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
                     
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" gutterBottom>

@@ -36,7 +36,6 @@ const customerFilters = [
             { id: false, name: 'Unverified' }
         ]} 
         label="Status" 
-        allowEmpty
         emptyText="All Status"
     />,
     <SelectInput 
@@ -48,7 +47,6 @@ const customerFilters = [
             { id: false, name: 'No Orders' }
         ]} 
         label="Order Status" 
-        allowEmpty
         emptyText="All Customers"
     />,
     <SelectInput 
@@ -60,7 +58,6 @@ const customerFilters = [
             { id: false, name: 'Email Hidden' }
         ]} 
         label="Email Visibility" 
-        allowEmpty
         emptyText="All Email Visibility"
     />,
     <SearchInput key="email" source="email" label="Search by Email" placeholder="Enter email address" />,

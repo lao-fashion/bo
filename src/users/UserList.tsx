@@ -35,7 +35,6 @@ const userFilters = [
       { id: false, name: 'Unverified' }
     ]}
     label="Status"
-    allowEmpty
     emptyText="All Status"
   />,
   <SelectInput
@@ -47,7 +46,6 @@ const userFilters = [
       { id: false, name: 'Email Hidden' }
     ]}
     label="Email Visibility"
-    allowEmpty
     emptyText="All Email Visibility"
   />,
   <SearchInput key="email" source="email" label="Search by Email" placeholder="Enter email address" />,
