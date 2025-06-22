@@ -11,6 +11,12 @@ import {
     useEditContext,
 } from 'react-admin';
 
+const RichTextInput = React.lazy(() =>
+    import('ra-input-rich-text').then(module => ({
+        default: module.RichTextInput,
+    }))
+);
+
 const ProductTitle = () => {
     const appTitle = useDefaultTitle();
     const { defaultTitle } = useEditContext();
@@ -35,20 +41,20 @@ const ProductEdit = () => (
                 label="Name (Lao)" 
                 fullWidth 
             />
-            <TextInput 
-                source="description" 
-                multiline 
-                rows={3} 
-                validate={required()} 
-                fullWidth 
-            />
-            <TextInput 
-                source="description_la" 
-                label="Description (Lao)" 
-                multiline 
-                rows={3} 
-                fullWidth 
-            />
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="description" 
+                    validate={required()} 
+                    fullWidth 
+                />
+            </React.Suspense>
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="description_la" 
+                    label="Description (Lao)" 
+                    fullWidth 
+                />
+            </React.Suspense>
             <NumberInput 
                 source="price" 
                 validate={required()} 
@@ -67,12 +73,12 @@ const ProductEdit = () => (
                 label="Image URL" 
                 fullWidth 
             />
-            <TextInput 
-                source="details" 
-                multiline 
-                rows={4} 
-                fullWidth 
-            />
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="details" 
+                    fullWidth 
+                />
+            </React.Suspense>
         </SimpleForm>
     </Edit>
 );

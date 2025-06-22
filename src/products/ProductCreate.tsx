@@ -43,20 +43,20 @@ const ProductCreate = () => (
                 label="Name (Lao)" 
                 fullWidth 
             />
-            <TextInput 
-                source="description" 
-                multiline 
-                rows={3} 
-                validate={required()} 
-                fullWidth 
-            />
-            <TextInput 
-                source="description_la" 
-                label="Description (Lao)" 
-                multiline 
-                rows={3} 
-                fullWidth 
-            />
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="description" 
+                    validate={required()} 
+                    fullWidth 
+                />
+            </React.Suspense>
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="description_la" 
+                    label="Description (Lao)" 
+                    fullWidth 
+                />
+            </React.Suspense>
             <NumberInput 
                 source="price" 
                 validate={required()} 
@@ -75,12 +75,12 @@ const ProductCreate = () => (
                 label="Image URL" 
                 fullWidth 
             />
-            <TextInput 
-                source="details" 
-                multiline 
-                rows={4} 
-                fullWidth 
-            />
+            <React.Suspense fallback={<div>Loading...</div>}>
+                <RichTextInput 
+                    source="details" 
+                    fullWidth 
+                />
+            </React.Suspense>
         </SimpleForm>
     </Create>
 );
