@@ -9,6 +9,7 @@ import {
     ImageField,
     useDefaultTitle,
     useShowContext,
+    useRecordContext,
 } from 'react-admin';
 import {
     Box,
@@ -19,6 +20,7 @@ import {
     Grid,
     Divider,
     Paper,
+    CardMedia,
 } from '@mui/material';
 import { AttachMoney, Category, CalendarToday, Inventory } from '@mui/icons-material';
 
@@ -33,6 +35,31 @@ const ProductTitle = () => {
     );
 };
 
+const ProductImage = () => {
+    const record = useRecordContext();
+    
+    if (!record) return null;
+    
+    return (
+        <CardMedia
+            component="img"
+            image={record.image_url || '/placeholder-product.svg'}
+            alt={record.name || 'Product image'}
+            sx={{ 
+                width: '100%', 
+                height: 'auto', 
+                borderRadius: 2,
+                maxHeight: 400,
+                objectFit: 'cover',
+                bgcolor: 'grey.100'
+            }}
+            onError={(e: any) => {
+                e.target.src = '/placeholder-product.svg';
+            }}
+        />
+    );
+};
+
 const ProductShow = () => (
     <Show title={<ProductTitle />}>
         <Box sx={{ p: 2 }}>
@@ -40,19 +67,7 @@ const ProductShow = () => (
                 <Grid size={{ xs: 12, md: 5 }}>
                     <Card sx={{ height: 'fit-content' }}>
                         <CardContent>
-                            <ImageField 
-                                source="image_url" 
-                                label="" 
-                                sx={{ 
-                                    '& img': { 
-                                        width: '100%', 
-                                        height: 'auto', 
-                                        borderRadius: 2,
-                                        maxHeight: 400,
-                                        objectFit: 'cover'
-                                    } 
-                                }} 
-                            />
+                            <ProductImage />
                         </CardContent>
                     </Card>
                 </Grid>
