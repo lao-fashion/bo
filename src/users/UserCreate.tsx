@@ -32,7 +32,9 @@ const UserCreate = () => {
         } else if (values.password.length < 6) {
             errors.password = 'Password must be at least 6 characters long';
         }
-        if (values.passwordConfirm && values.password !== values.passwordConfirm) {
+        if (!values.passwordConfirm) {
+            errors.passwordConfirm = 'Password confirmation is required';
+        } else if (values.password !== values.passwordConfirm) {
             errors.passwordConfirm = 'Passwords do not match';
         }
         return errors;

@@ -40,7 +40,7 @@ export default (type: string) => {
 
         // Use custom products data provider for products resource
         if (resource === 'products' && productsDataProvider[name.toString()]) {
-          return productsDataProvider[name.toString()](params);
+          return productsDataProvider[name.toString()](resource, params);
         }
 
         // Use custom product categories data provider for product_categories and categories resources

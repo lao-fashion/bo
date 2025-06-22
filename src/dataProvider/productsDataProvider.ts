@@ -50,7 +50,7 @@ export interface ProductListResponse {
 }
 
 export const productsDataProvider: any = {
-  getList: async (params: ProductListParams): Promise<ProductListResponse> => {
+  getList: async (resource: string, params: ProductListParams): Promise<ProductListResponse> => {
     const { pagination, sort, filter } = params;
     const { page, perPage } = pagination;
     const { field, order } = sort;
@@ -133,9 +133,9 @@ export const productsDataProvider: any = {
     }
   },
 
-  getOne: async (id: string): Promise<{ data: ProductData }> => {
+  getOne: async (resource: string, params: { id: string }): Promise<{ data: ProductData }> => {
     try {
-      const record = await fetchPocketbaseDocument<ProductData>('products', id);
+      const record = await fetchPocketbaseDocument<ProductData>('products', params.id);
       return { data: record };
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -143,10 +143,10 @@ export const productsDataProvider: any = {
     }
   },
 
-  getMany: async (ids: string[]): Promise<{ data: ProductData[] }> => {
+  getMany: async (resource: string, params: { ids: string[] }): Promise<{ data: ProductData[] }> => {
     try {
-      const filterStr = ids.map(id => `id = "${id}"`).join(' || ');
-      const result = await pb.collection('products').getList(1, ids.length, {
+      const filterStr = params.ids.map(id => `id = "${id}"`).join(' || ');
+      const result = await pb.collection('products').getList(1, params.ids.length, {
         filter: filterStr,
       });
       return { data: result.items as ProductData[] };
@@ -156,7 +156,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  getManyReference: async (params: {
+  getManyReference: async (resource: string, params: {
     target: string;
     id: string;
     pagination: { page: number; perPage: number };
@@ -192,7 +192,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  create: async (params: { data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
+  create: async (resource: string, params: { data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
     try {
       const id = await createPocketbaseDocument('products', params.data);
       const record = await fetchPocketbaseDocument<ProductData>('products', id);
@@ -203,7 +203,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  update: async (params: { id: string; data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
+  update: async (resource: string, params: { id: string; data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
     const { id, data } = params;
     try {
       await updatePocketbaseDocument('products', id, data);
@@ -215,7 +215,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  updateMany: async (params: { ids: string[]; data: Partial<ProductData> }): Promise<{ data: string[] }> => {
+  updateMany: async (resource: string, params: { ids: string[]; data: Partial<ProductData> }): Promise<{ data: string[] }> => {
     const { ids, data } = params;
     try {
       await Promise.all(ids.map(id => updatePocketbaseDocument('products', id, data)));
@@ -226,7 +226,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  delete: async (params: { id: string }): Promise<{ data: ProductData }> => {
+  delete: async (resource: string, params: { id: string }): Promise<{ data: ProductData }> => {
     const { id } = params;
     try {
       const record = await fetchPocketbaseDocument<ProductData>('products', id);
@@ -238,7 +238,7 @@ export const productsDataProvider: any = {
     }
   },
 
-  deleteMany: async (params: { ids: string[] }): Promise<{ data: string[] }> => {
+  deleteMany: async (resource: string, params: { ids: string[] }): Promise<{ data: string[] }> => {
     const { ids } = params;
     try {
       await Promise.all(ids.map(id => deletePocketbaseDocument('products', id)));
