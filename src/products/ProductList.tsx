@@ -170,7 +170,11 @@ const ProductCard = () => {
             <CardMedia
                 component="img"
                 height="200"
-                image={record.image_url || '/placeholder-product.svg'}
+                image={
+                    Array.isArray(record.image_url) 
+                        ? (record.image_url.length > 0 ? record.image_url[0] : '/placeholder-product.svg')
+                        : (record.image_url || '/placeholder-product.svg')
+                }
                 alt={record.name}
                 sx={{ 
                     objectFit: 'cover',

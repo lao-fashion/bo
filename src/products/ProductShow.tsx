@@ -21,6 +21,8 @@ import {
     Divider,
     Paper,
     CardMedia,
+    ImageList,
+    ImageListItem,
 } from '@mui/material';
 import { AttachMoney, Category, CalendarToday, Inventory } from '@mui/icons-material';
 
@@ -40,23 +42,70 @@ const ProductImage = () => {
     
     if (!record) return null;
     
+    const imageUrls = Array.isArray(record.image_url) ? record.image_url : [record.image_url];
+    const validImageUrls = imageUrls.filter(url => url && url.trim() !== '');
+    
+    if (validImageUrls.length === 0) {
+        return (
+            <CardMedia
+                component="img"
+                image="/placeholder-product.svg"
+                alt={record.name || 'Product image'}
+                sx={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    borderRadius: 2,
+                    maxHeight: 400,
+                    objectFit: 'cover',
+                    bgcolor: 'grey.100'
+                }}
+            />
+        );
+    }
+    
+    if (validImageUrls.length === 1) {
+        return (
+            <CardMedia
+                component="img"
+                image={validImageUrls[0]}
+                alt={record.name || 'Product image'}
+                sx={{ 
+                    width: '100%', 
+                    height: 'auto', 
+                    borderRadius: 2,
+                    maxHeight: 400,
+                    objectFit: 'cover',
+                    bgcolor: 'grey.100'
+                }}
+                onError={(e: any) => {
+                    e.target.src = '/placeholder-product.svg';
+                }}
+            />
+        );
+    }
+    
     return (
-        <CardMedia
-            component="img"
-            image={record.image_url || '/placeholder-product.svg'}
-            alt={record.name || 'Product image'}
-            sx={{ 
-                width: '100%', 
-                height: 'auto', 
-                borderRadius: 2,
-                maxHeight: 400,
-                objectFit: 'cover',
-                bgcolor: 'grey.100'
-            }}
-            onError={(e: any) => {
-                e.target.src = '/placeholder-product.svg';
-            }}
-        />
+        <ImageList variant="masonry" cols={2} gap={8}>
+            {validImageUrls.map((imageUrl, index) => (
+                <ImageListItem key={index}>
+                    <CardMedia
+                        component="img"
+                        image={imageUrl}
+                        alt={`${record.name || 'Product'} image ${index + 1}`}
+                        sx={{ 
+                            width: '100%', 
+                            height: 'auto', 
+                            borderRadius: 2,
+                            objectFit: 'cover',
+                            bgcolor: 'grey.100'
+                        }}
+                        onError={(e: any) => {
+                            e.target.src = '/placeholder-product.svg';
+                        }}
+                    />
+                </ImageListItem>
+            ))}
+        </ImageList>
     );
 };
 

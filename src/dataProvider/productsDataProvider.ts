@@ -14,7 +14,7 @@ export interface ProductData {
   description: string;
   price: number;
   category_id: string;
-  image_url: string;
+  image_url: string[];
   name_la: string;
   description_la: string;
   details: string;

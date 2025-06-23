@@ -9,6 +9,8 @@ import {
     required,
     useCreateContext,
     useDefaultTitle,
+    ArrayInput,
+    SimpleFormIterator,
 } from 'react-admin';
 
 const RichTextInput = React.lazy(() =>
@@ -70,11 +72,16 @@ const ProductCreate = () => (
             >
                 <SelectInput source="name" fullWidth validate={required()} />
             </ReferenceInput>
-            <TextInput 
-                source="image_url" 
-                label="Image URL" 
-                fullWidth 
-            />
+            <ArrayInput source="image_url" label="Image URLs">
+                <SimpleFormIterator inline>
+                    <TextInput 
+                        source="" 
+                        label="Image URL" 
+                        fullWidth
+                        helperText="Enter image URL"
+                    />
+                </SimpleFormIterator>
+            </ArrayInput>
             <React.Suspense fallback={<div>Loading...</div>}>
                 <RichTextInput 
                     source="details" 
