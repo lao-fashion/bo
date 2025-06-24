@@ -38,8 +38,10 @@ const RevenueFilter: React.FC<Props> = ({ onFilterChange }) => {
     }
     onFilterChange({
       isYear: checked ? false : isYearChecked,
-      startDate: startDate?.format('YYYY-MM-DD'),
-      endDate: endDate?.format('YYYY-MM-DD'),
+      ...(checked ? {} : {
+        startDate: startDate?.format('YYYY-MM-DD'),
+        endDate: endDate?.format('YYYY-MM-DD'),
+      })
     });
   };
 
@@ -50,8 +52,10 @@ const RevenueFilter: React.FC<Props> = ({ onFilterChange }) => {
     }
     onFilterChange({
       isYear: checked ? true : false,
-      startDate: startDate?.format('YYYY-MM-DD'),
-      endDate: endDate?.format('YYYY-MM-DD'),
+      ...(checked ? {} : {
+        startDate: startDate?.format('YYYY-MM-DD'),
+        endDate: endDate?.format('YYYY-MM-DD'),
+      })
     });
   };
 
@@ -59,15 +63,17 @@ const RevenueFilter: React.FC<Props> = ({ onFilterChange }) => {
     if (startDate && endDate) {
       onFilterChange({
         isYear: isYearChecked,
-        startDate: startDate.format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD'),
+        ...(!isMonthChecked && !isYearChecked ? {
+          startDate: startDate.format('YYYY-MM-DD'),
+          endDate: endDate.format('YYYY-MM-DD'),
+        } : {})
       });
     }
   };
 
   React.useEffect(() => {
     handleDateChange();
-  }, [startDate, endDate, isYearChecked]);
+  }, [startDate, endDate, isYearChecked, isMonthChecked]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
