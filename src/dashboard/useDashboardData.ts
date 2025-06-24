@@ -61,9 +61,15 @@ interface DashboardData {
   error: string | null;
 }
 
-export const useDashboardData = () => {
-  const [data, setData] = useState<DashboardData>({
-    sellRevenue: null,
+interface FilterParams {
+  isYear?: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
+// Hook for static dashboard data (status count and order list)
+export const useStaticDashboardData = () => {
+  const [data, setData] = useState<Omit<DashboardData, 'sellRevenue'>>({
     statusCount: null,
     orderList: null,
     loading: true,
@@ -71,57 +77,125 @@ export const useDashboardData = () => {
   });
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchStaticDashboardData = async () => {
       try {
         setData((prev) => ({ ...prev, loading: true, error: null }));
 
-        const [sellRevenueResponse, statusCountResponse, orderListResponse] =
-          await Promise.all([
-            pb.send('/dashboard/sell-revenue', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${pb.authStore.token}`,
-              },
-            }),
-            pb.send('/dashboard/status-count', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${pb.authStore.token}`,
-              },
-            }),
-            pb.send('/order-list?page=1&perPage=10&status=pending', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${pb.authStore.token}`,
-              },
-            }),
-          ]);
+        const [statusCountResponse, orderListResponse] = await Promise.all([
+          pb.send('/dashboard/status-count', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${pb.authStore.token}`,
+            },
+          }),
+          pb.send('/order-list?page=1&perPage=10&status=pending', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${pb.authStore.token}`,
+            },
+          }),
+        ]);
 
         setData({
-          sellRevenue: sellRevenueResponse.sell,
           statusCount: statusCountResponse,
           orderList: orderListResponse,
           loading: false,
           error: null,
         });
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error fetching static dashboard data:', error);
         setData((prev) => ({
           ...prev,
           loading: false,
           error:
             error instanceof Error
               ? error.message
-              : 'Failed to fetch dashboard data',
+              : 'Failed to fetch static dashboard data',
         }));
       }
     };
 
-    fetchDashboardData();
+    fetchStaticDashboardData();
   }, []);
 
   return data;
+};
+
+// Hook for revenue data with filter parameters
+export const useRevenueData = (filterParams?: FilterParams) => {
+  const [data, setData] = useState<{
+    sellRevenue: SellRevenueData[] | null;
+    loading: boolean;
+    error: string | null;
+  }>({
+    sellRevenue: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      try {
+        setData((prev) => ({ ...prev, loading: true, error: null }));
+
+        // Build query parameters for sell-revenue endpoint
+        const sellRevenueParams = new URLSearchParams();
+        if (filterParams?.isYear !== undefined) {
+          sellRevenueParams.append('isYear', filterParams.isYear.toString());
+        }
+        if (filterParams?.startDate) {
+          sellRevenueParams.append('startDate', filterParams.startDate);
+        }
+        if (filterParams?.endDate) {
+          sellRevenueParams.append('endDate', filterParams.endDate);
+        }
+
+        const sellRevenueUrl = `/dashboard/sell-revenue${sellRevenueParams.toString() ? `?${sellRevenueParams.toString()}` : ''}`;
+
+        const sellRevenueResponse = await pb.send(sellRevenueUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${pb.authStore.token}`,
+          },
+        });
+
+        setData({
+          sellRevenue: sellRevenueResponse.sell,
+          loading: false,
+          error: null,
+        });
+      } catch (error) {
+        console.error('Error fetching revenue data:', error);
+        setData((prev) => ({
+          ...prev,
+          loading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Failed to fetch revenue data',
+        }));
+      }
+    };
+
+    fetchRevenueData();
+  }, [filterParams?.isYear, filterParams?.startDate, filterParams?.endDate]);
+
+  return data;
+};
+
+// Backward compatibility hook
+export const useDashboardData = (filterParams?: FilterParams) => {
+  const staticData = useStaticDashboardData();
+  const revenueData = useRevenueData(filterParams);
+
+  return {
+    sellRevenue: revenueData.sellRevenue,
+    statusCount: staticData.statusCount,
+    orderList: staticData.orderList,
+    loading: staticData.loading || revenueData.loading,
+    error: staticData.error || revenueData.error,
+  };
 };

@@ -1,7 +1,7 @@
 import PocketBase from "pocketbase";
 
 // const pb = new PocketBase("https://sensornode.shop"); // Replace with your PocketBase URL
-const pb = new PocketBase("http://localhost:8080"); // Replace with your PocketBase URL
+const pb = new PocketBase("https://sensornode.shop"); // Replace with your PocketBase URL
 pb.autoCancellation(false);
 
 export default pb;

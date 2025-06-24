@@ -3,10 +3,11 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -15,6 +16,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import RevenueFilter from './RevenueFilter';
 
 interface SellRevenueData {
   year: number;
@@ -24,11 +26,22 @@ interface SellRevenueData {
   amountTHB: string;
 }
 
-interface Props {
-  data: SellRevenueData[];
+interface FilterParams {
+  isYear: boolean;
+  startDate?: string;
+  endDate?: string;
+  month?: number;
+  year?: number;
 }
 
-const SellRevenueChart: React.FC<Props> = ({ data }) => {
+interface Props {
+  data: SellRevenueData[];
+  onFilterChange?: (params: FilterParams) => void;
+  loading?: boolean;
+}
+
+const SellRevenueChart: React.FC<Props> = ({ data, onFilterChange, loading }) => {
+
   const defaultData: SellRevenueData[] = [
     {
       year: 2025,
@@ -109,9 +122,30 @@ const SellRevenueChart: React.FC<Props> = ({ data }) => {
             30 Day Revenue History
           </Typography>
         }
+        action={
+          onFilterChange && <RevenueFilter onFilterChange={onFilterChange} />
+        }
       />
       <CardContent>
-        <Box sx={{ height: 320, width: '100%' }}>
+        <Box sx={{ height: 320, width: '100%', position: 'relative' }}>
+          {loading && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                zIndex: 1,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
           <ResponsiveContainer width='100%' height='100%'>
             <LineChart
               data={displayData}

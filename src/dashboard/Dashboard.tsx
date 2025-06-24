@@ -5,12 +5,12 @@ import {
   Theme,
   useMediaQuery,
 } from '@mui/material';
-import { CSSProperties } from 'react';
+import { CSSProperties, useState } from 'react';
 
 import OrderPendingList from './OrderPendingList';
 import SellRevenueChart from './SellRevenueChart';
 import StatusCountCards from './StatusCountCards';
-import { useDashboardData } from './useDashboardData';
+import { useStaticDashboardData, useRevenueData } from './useDashboardData';
 
 import { SellRevenue } from '../model/dashboard';
 import { Order } from '../types';
@@ -38,15 +38,38 @@ const styles = {
 
 const VerticalSpacer = () => <span style={{ height: '1em' }} />;
 
+interface FilterParams {
+  isYear: boolean;
+  startDate?: string;
+  endDate?: string;
+  month?: number;
+  year?: number;
+}
+
 const Dashboard = () => {
   const isXSmall = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm')
   );
   const isSmall = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
 
-  // Use new dashboard data hook
-  const { sellRevenue, statusCount, orderList, loading, error } =
-    useDashboardData();
+  const [filterParams, setFilterParams] = useState<FilterParams>({
+    isYear: false,
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+  });
+
+  // Use separate hooks for static and revenue data
+  const { statusCount, orderList, loading: staticLoading, error: staticError } = 
+    useStaticDashboardData();
+  const { sellRevenue, loading: revenueLoading, error: revenueError } = 
+    useRevenueData(filterParams);
+
+  const loading = staticLoading;
+  const error = staticError || revenueError;
+
+  const handleFilterChange = (params: FilterParams) => {
+    setFilterParams(params);
+  };
 
   // Show loading state
   if (loading) {
@@ -91,7 +114,7 @@ const Dashboard = () => {
         {/* Sell Revenue Section */}
         {sellRevenue && (
           <>
-            <SellRevenueChart data={sellRevenue} />
+            <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
             <VerticalSpacer />
           </>
         )}
@@ -117,7 +140,7 @@ const Dashboard = () => {
         <div style={styles.singleCol}>
           <div className='min-h-screen bg-gray-100 p-4'>
             <div className='max-w-4xl mx-auto'>
-              <SellRevenueChart data={sellRevenue} />
+              <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
             </div>
           </div>
         </div>
@@ -147,7 +170,7 @@ const Dashboard = () => {
           {/* Sell Revenue Section */}
           {sellRevenue && (
             <div style={styles.singleCol}>
-              <SellRevenueChart data={sellRevenue} />
+              <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
             </div>
           )}
         </div>
