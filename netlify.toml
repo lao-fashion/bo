@@ -1,5 +1,5 @@
 [build]
-  command = "bun install --no-cache && bun run build"
+  command = "rm -rf node_modules bun.lockb && bun install && bun run build"
   publish = "dist"
 
 [build.environment]
