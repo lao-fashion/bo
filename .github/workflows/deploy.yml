@@ -1,4 +1,3 @@
-
 name: Deploy to GitHub Pages
 
 on:
@@ -19,11 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Clean and install dependencies using Bun
+        run: |
+          rm -rf node_modules bun.lockb
+          bun install
 
       - name: Build
-        run: npm run build
+        run: bun run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
