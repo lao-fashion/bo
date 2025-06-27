@@ -5,10 +5,3 @@
 [build.environment]
   NODE_VERSION = "20.18.3"
   BASE_URL = "https://sensornode.shop"
-
-[[plugins]]
-  package = "@netlify/plugin-local-install-core"
-
-[build.lifecycle]
-  [[build.lifecycle.onBuild]]
-    command = "rm -rf node_modules bun.lockb && bun install"
