@@ -38,7 +38,7 @@ jobs:
 
       - name: Clean and install dependencies using Bun
         run: |
-          rm -rf node_modules bun.lockb
+          rm -rf node_modules package-lock.json bun.lockb
           bun install
 
       - name: Build
