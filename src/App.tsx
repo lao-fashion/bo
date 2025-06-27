@@ -23,7 +23,7 @@ import Segments from './segments/Segments';
 import visitors from './visitors';
 import customers from './customers';
 import { themes, ThemeName } from './themes/themes';
-import LoginPage from './layout/Login2';
+import LoginPage from './layout/Login';
 import MuiProvider from './styles/ThemeProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CurrencyProvider } from './components/CurrencySelector/CurrencyProvider';
@@ -33,8 +33,8 @@ import users from './users';
 
 const i18nProvider = polyglotI18nProvider(
   (locale) => {
-    if (locale === 'fr') {
-      return import('./i18n/fr').then((messages) => messages.default);
+    if (locale === 'la') {
+      return import('./i18n/la').then((messages) => messages.default);
     }
 
     // Always fallback on english
@@ -43,7 +43,7 @@ const i18nProvider = polyglotI18nProvider(
   'en',
   [
     { locale: 'en', name: 'English' },
-    { locale: 'fr', name: 'Français' },
+    { locale: 'la', name: 'Lao' },
   ]
 );
 

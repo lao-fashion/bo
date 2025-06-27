@@ -40,10 +40,7 @@ const authProvider: AuthProvider = {
     Promise.resolve({
       id: localStorage.getItem('id') || '',
       fullName: localStorage.getItem('username') || '',
-      avatar:
-        `https://sensornode.shop/api/files/pbc_3797365305/${localStorage.getItem('id')}/${localStorage.getItem(
-          'avatar'
-        )}` || '',
+      avatar: localStorage.getItem('avatar') || '',
     }),
 };
 

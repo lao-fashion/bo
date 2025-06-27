@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
+import { useRecordContext } from 'react-admin';
 import {
   BooleanInput,
   DateField,
@@ -83,6 +84,8 @@ const UserEdit = () => {
                     fullWidth
                     label='Phone Number'
                   />
+
+                  <TextInput source='avatar' fullWidth label='Avatar URL' />
                 </Box>
 
                 <Typography variant='h6' gutterBottom sx={{ mt: 3 }}>
@@ -121,6 +124,20 @@ const UserEdit = () => {
                 </Typography>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box
+                    display='flex'
+                    flexDirection='column'
+                    alignItems='center'
+                  >
+                    <Typography
+                      variant='body2'
+                      color='text.secondary'
+                      sx={{ mb: 1 }}
+                    >
+                      Avatar
+                    </Typography>
+                    <AvatarDisplay />
+                  </Box>
                   <Box>
                     <Typography variant='body2' color='text.secondary'>
                       User ID
@@ -130,9 +147,9 @@ const UserEdit = () => {
 
                   <Box>
                     <Typography variant='body2' color='text.secondary'>
-                      Collection
+                      Username
                     </Typography>
-                    <TextField source='collectionName' />
+                    <TextField source='username' />
                   </Box>
 
                   <Box>
@@ -155,6 +172,18 @@ const UserEdit = () => {
         </Grid>
       </SimpleForm>
     </Edit>
+  );
+};
+
+const AvatarDisplay = () => {
+  const record = useRecordContext();
+  if (!record?.avatar) return null;
+  return (
+    <img
+      src={record.avatar}
+      alt='User Avatar'
+      style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover' }}
+    />
   );
 };
 

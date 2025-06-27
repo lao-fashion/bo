@@ -1,23 +1,33 @@
-import { Typography } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import {
   BulkDeleteButton,
   CreateButton,
-  Datagrid,
+  DataTable,
   DateField,
   DeleteButton,
   EditButton,
   ExportButton,
   FilterButton,
   List,
-  NumberField,
   NumberInput,
   SearchInput,
-  TextField,
   TextInput,
   TopToolbar,
-  UrlField,
-  useRecordContext,
+  useRecordContext
 } from 'react-admin';
+
+export interface Blogs {
+  collectionId: string;
+  collectionName: string;
+  id: string;
+  image_url: string;
+  title: string;
+  description: string;
+  video_url: string;
+  count: number;
+  created: string;
+  updated: string;
+}
 
 const DescriptionField = () => {
   const record = useRecordContext();
@@ -66,6 +76,20 @@ const BlogListActions = () => (
 
 const BlogBulkActions = () => <BulkDeleteButton />;
 
+const ImageUrlField = (record: Blogs) => {
+  if (!record?.image_url) return null;
+
+  return (
+    <Avatar
+      src={record.image_url}
+      alt={record.collectionName}
+      sx={{ width: 32, height: 32 }}
+    />
+  );
+};
+
+const Column = DataTable.Col<Blogs>;
+
 export const BlogList = () => (
   <List
     filters={blogFilters}
@@ -73,17 +97,35 @@ export const BlogList = () => (
     sort={{ field: 'created', order: 'DESC' }}
     perPage={25}
   >
-    <Datagrid bulkActionButtons={<BlogBulkActions />} rowClick='edit'>
-      <TextField source='id' />
-      <TextField source='title' />
-      <DescriptionField />
-      <UrlField source='image_url' />
+    <DataTable bulkActionButtons={<BlogBulkActions />} rowClick='edit'>
+      <Column source='image_url' label='Image' render={ImageUrlField} />
+      {/* <Column source='id' /> */}
+      <Column source='title' />
+      <Column source='description' render={DescriptionField} />
       {/* <UrlField source='video_url' /> */}
-      <NumberField source='count' />
-      <DateField source='created' />
-      <DateField source='updated' />
-      <EditButton />
-      <DeleteButton />
-    </Datagrid>
+      <Column source='count' />
+      <Column
+        source='created'
+        label='Created'
+        render={(record) => <DateField source='created' record={record} showTime />}
+      />
+      <Column
+        source='updated'
+        label='Updated'
+        render={(record) => <DateField source='updated' record={record} showTime />}
+      />
+      <Column
+        source='edit'
+        field={DateField}
+        label='Edit'
+        render={EditButton}
+      />
+      <Column
+        source='delete'
+        field={DateField}
+        label='Delete'
+        render={DeleteButton}
+      />
+    </DataTable>
   </List>
 );

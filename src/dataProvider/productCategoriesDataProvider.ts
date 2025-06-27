@@ -27,12 +27,14 @@ export const productCategoriesDataProvider: any = {
     const filter = params.filter || {};
 
     try {
-      let query = pb.collection(COLLECTION_NAME).getList<ProductCategory>(page, perPage, {
-        sort: `${order === 'ASC' ? '+' : '-'}${field}`,
-        filter: Object.keys(filter || {})
-          .map(key => `${key} ~ "${filter[key]}"`)
-          .join(' && '),
-      });
+      let query = pb
+        .collection(COLLECTION_NAME)
+        .getList<ProductCategory>(page, perPage, {
+          sort: `${order === 'ASC' ? '+' : '-'}${field}`,
+          filter: Object.keys(filter || {})
+            .map((key) => `${key} ~ "${filter[key]}"`)
+            .join(' && '),
+        });
 
       const result = await query;
       return {
@@ -47,7 +49,10 @@ export const productCategoriesDataProvider: any = {
 
   getOne: async (resource: string, params: any) => {
     try {
-      const data = await fetchPocketbaseDocument<ProductCategory>(COLLECTION_NAME, String(params.id));
+      const data = await fetchPocketbaseDocument<ProductCategory>(
+        COLLECTION_NAME,
+        String(params.id)
+      );
       return { data };
     } catch (error) {
       console.error('Error fetching product category:', error);
@@ -58,7 +63,9 @@ export const productCategoriesDataProvider: any = {
   getMany: async (resource: string, params: any) => {
     try {
       const data = await Promise.all(
-        params.ids.map((id: any) => fetchPocketbaseDocument<ProductCategory>(COLLECTION_NAME, String(id)))
+        params.ids.map((id: any) =>
+          fetchPocketbaseDocument<ProductCategory>(COLLECTION_NAME, String(id))
+        )
       );
       return { data };
     } catch (error) {
@@ -69,11 +76,11 @@ export const productCategoriesDataProvider: any = {
 
   create: async (resource: string, params: any) => {
     try {
-      const id = await createPocketbaseDocument(
+      const id = await createPocketbaseDocument(COLLECTION_NAME, params.data);
+      const data = await fetchPocketbaseDocument<ProductCategory>(
         COLLECTION_NAME,
-        params.data
+        id
       );
-      const data = await fetchPocketbaseDocument<ProductCategory>(COLLECTION_NAME, id);
       return { data };
     } catch (error) {
       console.error('Error creating product category:', error);
@@ -88,7 +95,10 @@ export const productCategoriesDataProvider: any = {
         String(params.id),
         params.data
       );
-      const data = await fetchPocketbaseDocument<ProductCategory>(COLLECTION_NAME, String(params.id));
+      const data = await fetchPocketbaseDocument<ProductCategory>(
+        COLLECTION_NAME,
+        String(params.id)
+      );
       return { data };
     } catch (error) {
       console.error('Error updating product category:', error);
@@ -109,7 +119,9 @@ export const productCategoriesDataProvider: any = {
   deleteMany: async (resource: string, params: any) => {
     try {
       await Promise.all(
-        params.ids.map((id: any) => deletePocketbaseDocument(COLLECTION_NAME, String(id)))
+        params.ids.map((id: any) =>
+          deletePocketbaseDocument(COLLECTION_NAME, String(id))
+        )
       );
       return { data: params.ids };
     } catch (error) {

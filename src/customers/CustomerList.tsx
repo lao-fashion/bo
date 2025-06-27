@@ -1,35 +1,30 @@
+import { Download } from '@mui/icons-material';
+import {
+  Avatar,
+  Button,
+  FormControlLabel,
+  Switch,
+  Theme,
+  useMediaQuery,
+} from '@mui/material';
 import * as React from 'react';
 import {
-  BooleanField,
+  ColumnsButton,
   CreateButton,
   DataTable,
   DateField,
   EmailField,
   List,
   SearchInput,
-  TextField,
-  ColumnsButton,
+  SelectInput,
   TopToolbar,
+  useDataProvider,
   useDefaultTitle,
   useListContext,
-  BooleanInput,
-  SelectInput,
-  ReferenceInput,
-  useUpdate,
   useNotify,
   useRefresh,
-  useDataProvider,
+  useUpdate,
 } from 'react-admin';
-import {
-  useMediaQuery,
-  Theme,
-  Avatar,
-  Chip,
-  Switch,
-  FormControlLabel,
-  Button,
-} from '@mui/material';
-import { Download } from '@mui/icons-material';
 import * as XLSX from 'xlsx';
 import { Customer } from '../dataProvider/customersDataProvider';
 
@@ -153,7 +148,7 @@ const AvatarField = (record: Customer) => {
   );
 };
 
-const VerifiedField = ({ record }: { record?: Customer }) => {
+const VerifiedField = (record: Customer) => {
   const [update] = useUpdate();
   const notify = useNotify();
   const refresh = useRefresh();
@@ -265,7 +260,7 @@ const CustomerList = () => {
         <Column source='username' label='Username' />
         <Column source='email' field={EmailField} />
         <Column source='phone_number' label='Phone' />
-        <Column source='verified' field={VerifiedField} />
+        <Column source='verified' render={VerifiedField} label='Verified' />
         <Column source='created' field={DateField} label='Created' />
         <Column source='updated' field={DateField} label='Updated' />
       </DataTable>

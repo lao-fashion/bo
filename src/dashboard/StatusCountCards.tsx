@@ -125,7 +125,12 @@ const StatusCountCards: React.FC<Props> = ({
 
   return (
     <Grid container spacing={3}>
-      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 4
+        }}>
         <ModernStatusCard
           title='Monthly Revenue'
           value={
@@ -146,7 +151,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#607d8b'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 4
+        }}>
         <ModernStatusCard
           title='Total Customers'
           value={customerCount}
@@ -159,7 +169,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#607d8b'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 4
+        }}>
         <ModernStatusCard
           title='Pending Orders'
           value={orderStatusCount.pending}
@@ -172,7 +187,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#ff9800'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 3
+        }}>
         <ModernStatusCard
           title='Accepted Orders'
           value={orderStatusCount.accepted}
@@ -200,7 +220,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#2196f3'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 3
+        }}>
         <ModernStatusCard
           title='Orders Delivering'
           value={orderStatusCount.delivering}
@@ -227,7 +252,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#9c27b0'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 3
+        }}>
         <ModernStatusCard
           title='Completed Orders'
           value={orderStatusCount.completed}
@@ -240,7 +270,12 @@ const StatusCountCards: React.FC<Props> = ({
           bgColor='#4caf50'
         />
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+      <Grid
+        size={{
+          xs: 12,
+          sm: 6,
+          lg: 3
+        }}>
         <ModernStatusCard
           title='Cancelled Orders'
           value={orderStatusCount.cancel}

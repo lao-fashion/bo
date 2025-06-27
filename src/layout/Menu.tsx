@@ -14,8 +14,6 @@ import categories from '../categories';
 import customers from '../customers';
 import orders from '../orders';
 import products from '../products';
-import visitors from '../visitors';
-import users from '../users';
 
 type MenuName = 'menuCatalog' | 'menuSales' | 'menuCustomers';
 
@@ -83,7 +81,26 @@ const Menu = ({ dense = false }: MenuProps) => {
         primaryText={translate(`resources.users.name`, {
           smart_count: 2,
         })}
-        leftIcon={<users.icon />}
+        leftIcon={
+          <Box sx={{ ml: -0.1, mt: 0.2 }}>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              width='1.6em'
+              height='1.6em'
+              viewBox='0 -1 24 24'
+            >
+              <path
+                fill='currentColor'
+                d='M12 23C6.443 21.765 2 16.522 2 11V5l10-4l10 4v6c0 5.524-4.443 10.765-10 12M4 6v5a10.58 10.58 0 0 0 8 10a10.58 10.58 0 0 0 8-10V6l-8-3Z'
+              />
+              <circle cx='12' cy='8.5' r='2.5' fill='currentColor' />
+              <path
+                fill='currentColor'
+                d='M7 15a5.78 5.78 0 0 0 5 3a5.78 5.78 0 0 0 5-3c-.025-1.896-3.342-3-5-3c-1.667 0-4.975 1.104-5 3'
+              />
+            </svg>
+          </Box>
+        }
         dense={dense}
       />
       <MenuItemLink

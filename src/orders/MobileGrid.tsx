@@ -22,23 +22,27 @@ const MobileGrid = () => {
         return null;
     }
     return (
-        <Box
-            sx={{
-                margin: '0.5em',
-            }}
-        >
-            {data.map(record => (
+        <Box sx={{ margin: 1 }}>
+            {data?.map((record) => (
                 <RecordContextProvider key={record.id} value={record}>
-                    <Card sx={{ margin: '0.5rem 0' }}>
+                    <Card
+                        sx={{
+                            marginBottom: 2,
+                            boxShadow: 1,
+                            borderRadius: 2,
+                            overflow: 'hidden',
+                        }}
+                    >
                         <CardHeader
                             title={
-                                <>
+                                <Typography variant="subtitle1" fontWeight="bold">
                                     {translate('resources.orders.name', 1)} #
                                     <TextField
                                         source="reference"
-                                        variant="body1"
+                                        variant="body2"
+                                        sx={{ display: 'inline', ml: 0.5 }}
                                     />
-                                </>
+                                </Typography>
                             }
                             titleTypographyProps={{ variant: 'body1' }}
                             action={<EditButton />}
@@ -49,32 +53,37 @@ const MobileGrid = () => {
                                 sx={{ display: 'block', mb: 1 }}
                             />
                             <Typography variant="body2" gutterBottom>
-                                {translate('resources.reviews.fields.date')}
-                                :&nbsp;
-                                <DateField source="date" showTime />
+                                {translate('resources.reviews.fields.date')}:&nbsp;
+                                <DateField
+                                    source="date"
+                                    showTime
+                                    sx={{ display: 'inline' }}
+                                />
                             </Typography>
                             <Typography variant="body2" gutterBottom>
-                                {translate(
-                                    'resources.orders.fields.basket.total'
-                                )}
-                                :&nbsp;
+                                {translate('resources.orders.fields.basket.total')}:&nbsp;
                                 <NumberField
                                     source="total"
                                     options={{
                                         style: 'currency',
                                         currency: 'USD',
                                     }}
+                                    sx={{ display: 'inline' }}
                                 />
                             </Typography>
                             <Typography variant="body2" gutterBottom>
-                                {translate('resources.orders.fields.status')}
-                                :&nbsp;
-                                <TextField source="status" />
+                                {translate('resources.orders.fields.status')}:&nbsp;
+                                <TextField
+                                    source="status"
+                                    sx={{ display: 'inline' }}
+                                />
                             </Typography>
                             <Typography variant="body2">
-                                {translate('resources.orders.fields.returned')}
-                                :&nbsp;
-                                <BooleanField source="returned" />
+                                {translate('resources.orders.fields.returned')}:&nbsp;
+                                <BooleanField
+                                    source="returned"
+                                    sx={{ display: 'inline' }}
+                                />
                             </Typography>
                         </CardContent>
                     </Card>

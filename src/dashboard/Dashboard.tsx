@@ -10,23 +10,9 @@ import { CSSProperties, useState } from 'react';
 import OrderPendingList from './OrderPendingList';
 import SellRevenueChart from './SellRevenueChart';
 import StatusCountCards from './StatusCountCards';
-import { useStaticDashboardData, useRevenueData } from './useDashboardData';
+import { useRevenueData, useStaticDashboardData } from './useDashboardData';
 
 import { SellRevenue } from '../model/dashboard';
-import { Order } from '../types';
-
-interface OrderStats {
-  revenue: number;
-  nbNewOrders: number;
-  pendingOrders: Order[];
-}
-
-interface State {
-  nbNewOrders?: number;
-  pendingOrders?: Order[];
-  recentOrders?: Order[];
-  revenue?: string;
-}
 
 const styles = {
   flex: { display: 'flex' },
@@ -54,15 +40,24 @@ const Dashboard = () => {
 
   const [filterParams, setFilterParams] = useState<FilterParams>({
     isYear: false,
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
   });
 
   // Use separate hooks for static and revenue data
-  const { statusCount, orderList, loading: staticLoading, error: staticError } = 
-    useStaticDashboardData();
-  const { sellRevenue, loading: revenueLoading, error: revenueError } = 
-    useRevenueData(filterParams);
+  const {
+    statusCount,
+    orderList,
+    loading: staticLoading,
+    error: staticError,
+  } = useStaticDashboardData();
+  const {
+    sellRevenue,
+    loading: revenueLoading,
+    error: revenueError,
+  } = useRevenueData(filterParams);
 
   const loading = staticLoading;
   const error = staticError || revenueError;
@@ -96,32 +91,29 @@ const Dashboard = () => {
     );
   }
   return isXSmall ? (
-    <div>
-      <div style={styles.flexColumn as CSSProperties}>
-        <VerticalSpacer />
+    <Box sx={{ p: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {/* Status Section */}
         {statusCount && (
-          <>
-            <StatusCountCards
-              sellRevenue={sellRevenue?.[0] as SellRevenue}
-              orderStatusCount={statusCount.orderStatusCount}
-              customerCount={statusCount.customerCount}
-              sellAmount={statusCount.sellAmount}
-            />
-            <VerticalSpacer />
-          </>
+          <StatusCountCards
+            sellRevenue={sellRevenue?.[0] as SellRevenue}
+            orderStatusCount={statusCount.orderStatusCount}
+            customerCount={statusCount.customerCount}
+            sellAmount={statusCount.sellAmount}
+          />
         )}
         {/* Sell Revenue Section */}
         {sellRevenue && (
-          <>
-            <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
-            <VerticalSpacer />
-          </>
+          <SellRevenueChart
+            data={sellRevenue}
+            onFilterChange={handleFilterChange}
+            loading={revenueLoading}
+          />
         )}
         {/* Order Pending List Section */}
         {orderList && <OrderPendingList data={orderList} />}
-      </div>
-    </div>
+      </Box>
+    </Box>
   ) : isSmall ? (
     <div style={styles.flexColumn as CSSProperties}>
       {/* Status Section */}
@@ -140,7 +132,11 @@ const Dashboard = () => {
         <div style={styles.singleCol}>
           <div className='min-h-screen bg-gray-100 p-4'>
             <div className='max-w-4xl mx-auto'>
-              <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
+              <SellRevenueChart
+                data={sellRevenue}
+                onFilterChange={handleFilterChange}
+                loading={revenueLoading}
+              />
             </div>
           </div>
         </div>
@@ -170,7 +166,11 @@ const Dashboard = () => {
           {/* Sell Revenue Section */}
           {sellRevenue && (
             <div style={styles.singleCol}>
-              <SellRevenueChart data={sellRevenue} onFilterChange={handleFilterChange} loading={revenueLoading} />
+              <SellRevenueChart
+                data={sellRevenue}
+                onFilterChange={handleFilterChange}
+                loading={revenueLoading}
+              />
             </div>
           )}
         </div>

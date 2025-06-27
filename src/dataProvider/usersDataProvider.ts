@@ -5,6 +5,7 @@ export interface User {
   id: string;
   collectionId: string;
   collectionName: string;
+  avatar: string;
   username: string;
   full_name: string;
   email: string;

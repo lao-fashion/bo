@@ -1,9 +1,8 @@
 import pb, {
-  fetchAllPocketbaseDocuments,
-  fetchPocketbaseDocument,
   createPocketbaseDocument,
-  updatePocketbaseDocument,
   deletePocketbaseDocument,
+  fetchPocketbaseDocument,
+  updatePocketbaseDocument,
 } from '../api/pocketbase';
 
 export interface ProductData {
@@ -50,7 +49,10 @@ export interface ProductListResponse {
 }
 
 export const productsDataProvider: any = {
-  getList: async (resource: string, params: ProductListParams): Promise<ProductListResponse> => {
+  getList: async (
+    resource: string,
+    params: ProductListParams
+  ): Promise<ProductListResponse> => {
     const { pagination, sort, filter } = params;
     const { page, perPage } = pagination;
     const { field, order } = sort;
@@ -59,7 +61,9 @@ export const productsDataProvider: any = {
     const filterConditions: string[] = [];
 
     if (filter.q) {
-      filterConditions.push(`(name ~ "${filter.q}" || description ~ "${filter.q}" || name_la ~ "${filter.q}" || description_la ~ "${filter.q}")`);
+      filterConditions.push(
+        `(name ~ "${filter.q}" || description ~ "${filter.q}" || name_la ~ "${filter.q}" || description_la ~ "${filter.q}")`
+      );
     }
 
     if (filter.category_id) {
@@ -133,9 +137,15 @@ export const productsDataProvider: any = {
     }
   },
 
-  getOne: async (resource: string, params: { id: string }): Promise<{ data: ProductData }> => {
+  getOne: async (
+    resource: string,
+    params: { id: string }
+  ): Promise<{ data: ProductData }> => {
     try {
-      const record = await fetchPocketbaseDocument<ProductData>('products', params.id);
+      const record = await fetchPocketbaseDocument<ProductData>(
+        'products',
+        params.id
+      );
       return { data: record };
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -143,12 +153,17 @@ export const productsDataProvider: any = {
     }
   },
 
-  getMany: async (resource: string, params: { ids: string[] }): Promise<{ data: ProductData[] }> => {
+  getMany: async (
+    resource: string,
+    params: { ids: string[] }
+  ): Promise<{ data: ProductData[] }> => {
     try {
-      const filterStr = params.ids.map(id => `id = "${id}"`).join(' || ');
-      const result = await pb.collection('products').getList(1, params.ids.length, {
-        filter: filterStr,
-      });
+      const filterStr = params.ids.map((id) => `id = "${id}"`).join(' || ');
+      const result = await pb
+        .collection('products')
+        .getList(1, params.ids.length, {
+          filter: filterStr,
+        });
       return { data: result.items as ProductData[] };
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -156,13 +171,16 @@ export const productsDataProvider: any = {
     }
   },
 
-  getManyReference: async (resource: string, params: {
-    target: string;
-    id: string;
-    pagination: { page: number; perPage: number };
-    sort: { field: string; order: 'ASC' | 'DESC' };
-    filter: ProductFilter;
-  }): Promise<ProductListResponse> => {
+  getManyReference: async (
+    resource: string,
+    params: {
+      target: string;
+      id: string;
+      pagination: { page: number; perPage: number };
+      sort: { field: string; order: 'ASC' | 'DESC' };
+      filter: ProductFilter;
+    }
+  ): Promise<ProductListResponse> => {
     const { target, id, pagination, sort, filter } = params;
     const { page, perPage } = pagination;
     const { field, order } = sort;
@@ -170,7 +188,9 @@ export const productsDataProvider: any = {
     const filterConditions: string[] = [`${target} = "${id}"`];
 
     if (filter.q) {
-      filterConditions.push(`(name ~ "${filter.q}" || description ~ "${filter.q}")`);
+      filterConditions.push(
+        `(name ~ "${filter.q}" || description ~ "${filter.q}")`
+      );
     }
 
     const filterStr = filterConditions.join(' && ');
@@ -192,7 +212,10 @@ export const productsDataProvider: any = {
     }
   },
 
-  create: async (resource: string, params: { data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
+  create: async (
+    resource: string,
+    params: { data: Partial<ProductData> }
+  ): Promise<{ data: ProductData }> => {
     try {
       const id = await createPocketbaseDocument('products', params.data);
       const record = await fetchPocketbaseDocument<ProductData>('products', id);
@@ -203,7 +226,10 @@ export const productsDataProvider: any = {
     }
   },
 
-  update: async (resource: string, params: { id: string; data: Partial<ProductData> }): Promise<{ data: ProductData }> => {
+  update: async (
+    resource: string,
+    params: { id: string; data: Partial<ProductData> }
+  ): Promise<{ data: ProductData }> => {
     const { id, data } = params;
     try {
       await updatePocketbaseDocument('products', id, data);
@@ -215,10 +241,15 @@ export const productsDataProvider: any = {
     }
   },
 
-  updateMany: async (resource: string, params: { ids: string[]; data: Partial<ProductData> }): Promise<{ data: string[] }> => {
+  updateMany: async (
+    resource: string,
+    params: { ids: string[]; data: Partial<ProductData> }
+  ): Promise<{ data: string[] }> => {
     const { ids, data } = params;
     try {
-      await Promise.all(ids.map(id => updatePocketbaseDocument('products', id, data)));
+      await Promise.all(
+        ids.map((id) => updatePocketbaseDocument('products', id, data))
+      );
       return { data: ids };
     } catch (error) {
       console.error('Error updating products:', error);
@@ -226,7 +257,10 @@ export const productsDataProvider: any = {
     }
   },
 
-  delete: async (resource: string, params: { id: string }): Promise<{ data: ProductData }> => {
+  delete: async (
+    resource: string,
+    params: { id: string }
+  ): Promise<{ data: ProductData }> => {
     const { id } = params;
     try {
       const record = await fetchPocketbaseDocument<ProductData>('products', id);
@@ -238,10 +272,15 @@ export const productsDataProvider: any = {
     }
   },
 
-  deleteMany: async (resource: string, params: { ids: string[] }): Promise<{ data: string[] }> => {
+  deleteMany: async (
+    resource: string,
+    params: { ids: string[] }
+  ): Promise<{ data: string[] }> => {
     const { ids } = params;
     try {
-      await Promise.all(ids.map(id => deletePocketbaseDocument('products', id)));
+      await Promise.all(
+        ids.map((id) => deletePocketbaseDocument('products', id))
+      );
       return { data: ids };
     } catch (error) {
       console.error('Error deleting products:', error);

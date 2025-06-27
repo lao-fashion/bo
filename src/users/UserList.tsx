@@ -1,10 +1,5 @@
 import { Download } from '@mui/icons-material';
-import {
-  Button,
-  Switch,
-  Theme,
-  useMediaQuery
-} from '@mui/material';
+import { Avatar, Button, Switch, Theme, useMediaQuery } from '@mui/material';
 import * as React from 'react';
 import {
   ColumnsButton,
@@ -21,7 +16,7 @@ import {
   useListContext,
   useNotify,
   useRefresh,
-  useUpdate
+  useUpdate,
 } from 'react-admin';
 import * as XLSX from 'xlsx';
 import { User } from '../dataProvider/usersDataProvider';
@@ -129,7 +124,7 @@ const UserTitle = () => {
 
 const Column = DataTable.Col<User>;
 
-const VerifiedField = ({ record }: { record?: User }) => {
+const VerifiedField = (record: User) => {
   const [update] = useUpdate();
   const notify = useNotify();
   const refresh = useRefresh();
@@ -166,6 +161,18 @@ const VerifiedField = ({ record }: { record?: User }) => {
   );
 };
 
+const AvatarField = (record: User) => {
+  if (!record?.avatar) return null;
+
+  return (
+    <Avatar
+      src={record.avatar}
+      alt={record.username}
+      sx={{ width: 32, height: 32 }}
+    />
+  );
+};
+
 const UserList = () => {
   const isXsmall = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.down('sm')
@@ -189,11 +196,12 @@ const UserList = () => {
           },
         }}
       >
+        <Column source='avatar' render={AvatarField} />
         <Column source='full_name' label='Full Name' />
         <Column source='username' label='Username' />
         <Column source='email' field={EmailField} />
         <Column source='phone_number' label='Phone' />
-        <Column source='verified' field={VerifiedField} label='Verified' />
+        <Column source='verified' render={VerifiedField} label='Verified' />
 
         <Column source='created' field={DateField} label='Created' />
         <Column source='updated' field={DateField} label='Updated' />
