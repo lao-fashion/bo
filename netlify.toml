@@ -1,9 +1,7 @@
 [build]
-  command = "rm -rf node_modules bun.lockb && bun install && bun run build"
+  command = "bun run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20.18.3"
   BASE_URL = "https://sensornode.shop"
-  BUN_INSTALL = "/opt/buildhome/.bun"
-  BUN_BIN = "/opt/buildhome/.bun/bin"
