@@ -15,6 +15,14 @@ export interface Customer {
   updated: string;
 }
 
+// Function to transform a single customer record
+const transformCustomer = (customer: any) => {
+  if (customer.avatar) {
+    customer.avatar = `${pb.baseUrl}/api/files/_pb_users_auth_/${customer.id}/${customer.avatar}?token=${pb.authStore.token}`;
+  }
+  return customer;
+};
+
 export const customersDataProvider: Partial<DataProvider> = {
   getList: async (resource, params) => {
     const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
@@ -34,7 +42,7 @@ export const customersDataProvider: Partial<DataProvider> = {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           if (key === 'has_ordered') {
-            // Special handling for has_ordered filter - check if customer has any orders
+            // Special handling for has_ordered filter
             if (value === true) {
               filterParts.push(`id IN (SELECT DISTINCT customer_id FROM orders WHERE customer_id != "")`);
             } else {
@@ -63,7 +71,7 @@ export const customersDataProvider: Partial<DataProvider> = {
       });
 
       return {
-        data: result.items as any,
+        data: result.items.map(transformCustomer) as any,
         total: result.totalItems,
       };
     } catch (error) {
@@ -75,7 +83,7 @@ export const customersDataProvider: Partial<DataProvider> = {
   getOne: async (resource, params) => {
     try {
       const record = await pb.collection('customers').getOne(params.id.toString());
-      return { data: record as any };
+      return { data: transformCustomer(record) as any };
     } catch (error) {
       console.error('Error fetching customer:', error);
       throw error;
@@ -85,7 +93,7 @@ export const customersDataProvider: Partial<DataProvider> = {
   create: async (resource, params) => {
     try {
       const record = await pb.collection('customers').create(params.data);
-      return { data: record as any };
+      return { data: transformCustomer(record) as any };
     } catch (error) {
       console.error('Error creating customer:', error);
       throw error;
@@ -95,7 +103,7 @@ export const customersDataProvider: Partial<DataProvider> = {
   update: async (resource, params) => {
     try {
       const record = await pb.collection('customers').update(params.id, params.data);
-      return { data: record as any };
+      return { data: transformCustomer(record) as any };
     } catch (error) {
       console.error('Error updating customer:', error);
       throw error;
@@ -129,7 +137,7 @@ export const customersDataProvider: Partial<DataProvider> = {
       const records = await Promise.all(
         params.ids.map(id => pb.collection('customers').getOne(id.toString()))
       );
-      return { data: records as any };
+      return { data: records.map(transformCustomer) as any };
     } catch (error) {
       console.error('Error fetching customers:', error);
       throw error;
@@ -150,7 +158,7 @@ export const customersDataProvider: Partial<DataProvider> = {
       });
 
       return {
-        data: result.items as any,
+        data: result.items.map(transformCustomer) as any,
         total: result.totalItems,
       };
     } catch (error) {

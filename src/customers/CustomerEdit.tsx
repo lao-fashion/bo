@@ -99,7 +99,7 @@ const CustomerAside = () => {
                         Profile Preview
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                        <Avatar sx={{ width: 64, height: 64 }}>
+                        <Avatar sx={{ width: 64, height: 64 }} >
                             <TextField source="name" />
                         </Avatar>
                         <Box>
