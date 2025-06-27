@@ -1,5 +1,5 @@
 [build]
-  command = "bun run build"
+  command = "bun install --no-cache && bun run build"
   publish = "dist"
 
 [build.environment]
@@ -7,6 +7,3 @@
   BASE_URL = "https://sensornode.shop"
   BUN_INSTALL = "/opt/buildhome/.bun"
   BUN_BIN = "/opt/buildhome/.bun/bin"
-
-[[plugins]]
-  package = "@netlify/plugin-lighthouse"
